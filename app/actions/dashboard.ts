@@ -1,0 +1,152 @@
+'use server'
+
+import { createClient } from '@/utils/supabase/server'
+import { Database } from '@/types/supabase'
+
+type Profile = Database['public']['Tables']['profiles']['Row']
+type WalletTransaction = Database['public']['Tables']['wallet_transactions']['Row']
+
+export async function getDashboardStats(userId: string) {
+  const supabase = await createClient()
+
+  // Obtener perfil
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+
+  // Calcular ganancias totales (suma de todas las transacciones positivas)
+  const { data: transactions } = await supabase
+    .from('wallet_transactions')
+    .select('amount')
+    .eq('user_id', userId)
+    .eq('status', 'COMPLETED')
+    .gt('amount', 0)
+
+  const totalEarnings =
+    transactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0
+
+  // Obtener balance actual (última transacción)
+  const { data: lastTransaction } = await supabase
+    .from('wallet_transactions')
+    .select('balance_after')
+    .eq('user_id', userId)
+    .eq('status', 'COMPLETED')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  const currentBalance = lastTransaction?.balance_after || 0
+
+  // Contar afiliados directos (donde sponsor_id = userId)
+  const { count: directAffiliates } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('sponsor_id', userId)
+    .eq('is_active', true)
+
+  // Obtener puntos del mes actual
+  const startOfMonth = new Date()
+  startOfMonth.setDate(1)
+  startOfMonth.setHours(0, 0, 0, 0)
+
+  const { data: monthlyPoints } = await supabase
+    .from('orders')
+    .select('points_earned')
+    .eq('user_id', userId)
+    .eq('payment_status', 'PAID')
+    .gte('created_at', startOfMonth.toISOString())
+
+  const pointsThisMonth =
+    monthlyPoints?.reduce((sum, o) => sum + (o.points_earned || 0), 0) || 0
+
+  // Obtener requisitos de rango
+  const { data: rankRequirements } = await supabase
+    .from('rank_requirements')
+    .select('*')
+    .order('min_points', { ascending: true })
+
+  return {
+    profile,
+    totalEarnings,
+    currentBalance,
+    directAffiliates: directAffiliates || 0,
+    pointsThisMonth,
+    rankRequirements: rankRequirements || [],
+  }
+}
+
+export async function getNetworkData(userId: string) {
+  const supabase = await createClient()
+
+  // Obtener afiliados directos (nivel 1)
+  const { data: directAffiliates } = await supabase
+    .from('profiles')
+    .select('id, public_name, referral_code, status_level, current_points, created_at')
+    .eq('sponsor_id', userId)
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+
+  if (!directAffiliates) return []
+
+  // Para cada afiliado directo, obtener sus ventas del mes
+  const networkData = await Promise.all(
+    directAffiliates.map(async (affiliate) => {
+      const startOfMonth = new Date()
+      startOfMonth.setDate(1)
+      startOfMonth.setHours(0, 0, 0, 0)
+
+      // Contar órdenes del mes
+      const { count: monthlyOrders } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', affiliate.id)
+        .eq('payment_status', 'PAID')
+        .gte('created_at', startOfMonth.toISOString())
+
+      // Calcular ventas totales del mes
+      const { data: monthlyOrdersData } = await supabase
+        .from('orders')
+        .select('total_amount')
+        .eq('user_id', affiliate.id)
+        .eq('payment_status', 'PAID')
+        .gte('created_at', startOfMonth.toISOString())
+
+      const monthlySales =
+        monthlyOrdersData?.reduce((sum, o) => sum + Number(o.total_amount), 0) || 0
+
+      // Determinar si está activo (compró este mes)
+      const isActive = (monthlyOrders || 0) > 0
+
+      return {
+        ...affiliate,
+        level: 1,
+        monthlyOrders: monthlyOrders || 0,
+        monthlySales,
+        isActive,
+      }
+    })
+  )
+
+  return networkData
+}
+
+export async function getWalletTransactions(userId: string) {
+  const supabase = await createClient()
+
+  const { data: transactions, error } = await supabase
+    .from('wallet_transactions')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(50)
+
+  if (error) {
+    console.error('Error fetching transactions:', error)
+    return []
+  }
+
+  return transactions || []
+}
+
