@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/cart-context'
 import { processOrder } from '@/app/actions/shop'
+import { useImageUpload } from '@/hooks/use-image-upload'
 import { User } from '@supabase/supabase-js'
 import { Database } from '@/types/supabase'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Upload, X, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -19,7 +20,11 @@ interface CheckoutFormProps {
 export function CheckoutForm({ user, profile }: CheckoutFormProps) {
   const router = useRouter()
   const { items, clearCart, getTotalPrice } = useCart()
+  const { uploadImage, isUploading: isUploadingProof } = useImageUpload()
   const [loading, setLoading] = useState(false)
+  const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null)
+  const [paymentProofPreview, setPaymentProofPreview] = useState<string | null>(null)
+  const [paymentProofUrl, setPaymentProofUrl] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: profile?.public_name || user?.user_metadata?.name || '',
@@ -42,8 +47,60 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
     )
   }
 
+  const handlePaymentProofSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validar tipo (imagen o PDF)
+    const isImage = file.type.startsWith('image/')
+    const isPdf = file.type === 'application/pdf'
+
+    if (!isImage && !isPdf) {
+      toast.error('El archivo debe ser una imagen o PDF')
+      return
+    }
+
+    // Validar tamaño (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('El archivo no puede ser mayor a 5MB')
+      return
+    }
+
+    setPaymentProofFile(file)
+
+    // Crear preview si es imagen
+    if (isImage) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPaymentProofPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    } else {
+      setPaymentProofPreview(null)
+    }
+
+    // Subir archivo inmediatamente
+    const url = await uploadImage(file, 'payment-proofs')
+    if (url) {
+      setPaymentProofUrl(url)
+    }
+  }
+
+  const handleRemoveProof = () => {
+    setPaymentProofFile(null)
+    setPaymentProofPreview(null)
+    setPaymentProofUrl(null)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validar que se haya subido el comprobante
+    if (!paymentProofUrl) {
+      toast.error('Debes adjuntar un comprobante de pago')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -76,13 +133,14 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
           country: formData.country,
           phone: formData.phone,
         },
+        paymentProofUrl,
         affiliateId
       )
 
       if (result.success) {
-        toast.success(`¡Compra exitosa! Orden #${result.orderNumber}`)
+        toast.success(`¡Pedido creado! Orden #${result.orderNumber}`)
         clearCart()
-        router.push(`/checkout/success?order=${result.orderNumber}`)
+        router.push(`/checkout/pending?order=${result.orderNumber}`)
       } else {
         toast.error(result.error || 'Error al procesar la orden')
       }
@@ -169,10 +227,97 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
         </div>
       </div>
 
+      {/* Sección de Comprobante de Pago */}
+      <div className="pt-4 border-t border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Comprobante de Pago *
+        </h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Adjunta una foto o PDF de tu comprobante de pago (transferencia, depósito, etc.)
+        </p>
+
+        {paymentProofPreview ? (
+          <div className="relative">
+            <div className="border-2 border-gray-300 rounded-lg p-4 bg-gray-50">
+              <img
+                src={paymentProofPreview}
+                alt="Preview del comprobante"
+                className="max-w-full h-auto max-h-64 mx-auto rounded"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleRemoveProof}
+              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            {paymentProofUrl && (
+              <p className="mt-2 text-sm text-green-600 flex items-center gap-1">
+                <FileText className="h-4 w-4" />
+                Comprobante subido exitosamente
+              </p>
+            )}
+          </div>
+        ) : paymentProofFile && !paymentProofPreview ? (
+          <div className="border-2 border-gray-300 rounded-lg p-4 bg-gray-50">
+            <div className="flex items-center gap-2 text-gray-700">
+              <FileText className="h-5 w-5" />
+              <span className="text-sm">{paymentProofFile.name}</span>
+            </div>
+            {isUploadingProof && (
+              <p className="mt-2 text-sm text-blue-600 flex items-center gap-1">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Subiendo comprobante...
+              </p>
+            )}
+            {paymentProofUrl && (
+              <p className="mt-2 text-sm text-green-600 flex items-center gap-1">
+                <FileText className="h-4 w-4" />
+                Comprobante subido exitosamente
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleRemoveProof}
+              className="mt-2 text-sm text-red-600 hover:text-red-800"
+            >
+              Eliminar
+            </button>
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <Upload className="w-8 h-8 mb-2 text-gray-400" />
+              <p className="mb-2 text-sm text-gray-500">
+                <span className="font-semibold">Click para subir</span> o arrastra y suelta
+              </p>
+              <p className="text-xs text-gray-500">
+                PNG, JPG, PDF hasta 5MB
+              </p>
+            </div>
+            <input
+              type="file"
+              accept="image/*,application/pdf"
+              className="hidden"
+              onChange={handlePaymentProofSelect}
+              required
+            />
+          </label>
+        )}
+
+        {isUploadingProof && (
+          <div className="mt-2 flex items-center gap-2 text-sm text-blue-600">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Subiendo comprobante...
+          </div>
+        )}
+      </div>
+
       <div className="pt-4">
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || isUploadingProof || !paymentProofUrl}
           className="w-full flex items-center justify-center rounded-md bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
@@ -181,9 +326,12 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
               Procesando...
             </>
           ) : (
-            'Confirmar Compra'
+            'Confirmar Pedido'
           )}
         </button>
+        <p className="mt-2 text-xs text-gray-500 text-center">
+          Tu pedido será revisado y aprobado manualmente. Recibirás una notificación cuando esté listo.
+        </p>
       </div>
     </form>
   )

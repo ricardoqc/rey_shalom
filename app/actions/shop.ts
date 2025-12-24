@@ -33,6 +33,7 @@ interface ProcessOrderResult {
 export async function processOrder(
   cartItems: CartItem[],
   shippingAddress: ShippingAddress,
+  paymentProofUrl: string,
   affiliateId?: string
 ): Promise<ProcessOrderResult> {
   const supabase = await createClient()
@@ -118,7 +119,15 @@ export async function processOrder(
     const discountAmount = 0 // Puedes calcular descuentos adicionales aquí
     const totalAmount = subtotal + shippingCost - discountAmount
 
-    // 5. Crear la orden
+    // 5. Validar que se proporcionó el comprobante de pago
+    if (!paymentProofUrl) {
+      return {
+        success: false,
+        error: 'Debes adjuntar un comprobante de pago',
+      }
+    }
+
+    // 6. Crear la orden con status 'pending'
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
@@ -138,8 +147,9 @@ export async function processOrder(
         points_earned: totalPoints,
         fulfillment_warehouse_id: warehouseId,
         fulfillment_status: 'PENDING',
-        payment_status: 'PAID', // Mock payment - cambiar cuando integres Stripe
-        payment_method: 'MOCK',
+        payment_status: 'pending', // Pendiente de aprobación
+        payment_proof_url: paymentProofUrl,
+        payment_method: 'VOUCHER',
       })
       .select()
       .single()
@@ -151,7 +161,7 @@ export async function processOrder(
       }
     }
 
-    // 6. Crear items de la orden
+    // 7. Crear items de la orden
     const orderItems = cartItems.map((item) => ({
       order_id: order.id,
       product_id: item.id,
@@ -174,40 +184,30 @@ export async function processOrder(
       }
     }
 
-    // 7. Disminuir stock usando la función SQL
+    // 8. Reservar stock usando la función SQL (p_reserve: true)
+    // Esto reserva el stock pero no lo descuenta hasta que se apruebe el pago
     for (const item of cartItems) {
       const { error: stockError } = await supabase.rpc('decrease_stock', {
         p_warehouse_id: warehouseId,
         p_product_id: item.id,
         p_quantity: item.quantity,
-        p_reserve: false,
+        p_reserve: true, // Reservar stock, no descontar todavía
       })
 
       if (stockError) {
-        console.error(`Error disminuyendo stock para ${item.name}:`, stockError)
-        // Continuar con otros items, pero registrar el error
+        console.error(`Error reservando stock para ${item.name}:`, stockError)
+        // Rollback: eliminar la orden si falla la reserva de stock
+        await supabase.from('orders').delete().eq('id', order.id)
+        return {
+          success: false,
+          error: `Error al reservar stock para ${item.name}`,
+        }
       }
     }
 
-    // 8. Calcular comisiones usando la función SQL
-    const { error: commissionError } = await supabase.rpc('calculate_commissions', {
-      p_order_id: order.id,
-    })
-
-    if (commissionError) {
-      console.error('Error calculando comisiones:', commissionError)
-      // No fallar la orden por esto, pero registrar el error
-    }
-
-    // 9. Actualizar puntos del usuario (el trigger debería hacerlo, pero por si acaso)
-    const { error: pointsError } = await supabase.rpc('update_user_points', {
-      p_user_id: user.id,
-      p_points: totalPoints,
-    })
-
-    if (pointsError) {
-      console.error('Error actualizando puntos:', pointsError)
-    }
+    // NOTA: Las comisiones NO se calculan aquí
+    // Se calcularán cuando el admin apruebe el pago (payment_status = 'approved')
+    // Los puntos tampoco se otorgan hasta que se apruebe el pago
 
     revalidatePath('/dashboard')
     revalidatePath('/checkout')

@@ -118,7 +118,9 @@ export interface Database {
           affiliate_id: string | null
           total_amount: number
           points_earned: number
-          payment_status: string
+          payment_status: 'pending' | 'approved' | 'rejected'
+          payment_proof_url: string | null
+          admin_notes: string | null
           created_at: string
         }
         Insert: {
@@ -128,7 +130,9 @@ export interface Database {
           affiliate_id?: string | null
           total_amount: number
           points_earned?: number
-          payment_status?: string
+          payment_status?: 'pending' | 'approved' | 'rejected'
+          payment_proof_url?: string | null
+          admin_notes?: string | null
           created_at?: string
         }
         Update: {
@@ -138,7 +142,9 @@ export interface Database {
           affiliate_id?: string | null
           total_amount?: number
           points_earned?: number
-          payment_status?: string
+          payment_status?: 'pending' | 'approved' | 'rejected'
+          payment_proof_url?: string | null
+          admin_notes?: string | null
           created_at?: string
         }
       }
@@ -184,6 +190,9 @@ export interface Database {
           points_per_unit: number
           category: string | null
           brand: string | null
+          image_url: string | null
+          is_pack: boolean
+          target_rank: string | null
           is_active: boolean
           is_featured: boolean
           created_at: string
@@ -198,6 +207,9 @@ export interface Database {
           points_per_unit?: number
           category?: string | null
           brand?: string | null
+          image_url?: string | null
+          is_pack?: boolean
+          target_rank?: string | null
           is_active?: boolean
           is_featured?: boolean
           created_at?: string
@@ -212,6 +224,9 @@ export interface Database {
           points_per_unit?: number
           category?: string | null
           brand?: string | null
+          image_url?: string | null
+          is_pack?: boolean
+          target_rank?: string | null
           is_active?: boolean
           is_featured?: boolean
           created_at?: string

@@ -47,6 +47,7 @@ export function ProductCard({
       basePrice: product.base_price,
       points: product.points_per_unit || 0,
       sku: product.sku,
+      image: product.image_url || undefined,
     })
   }
 
@@ -59,11 +60,19 @@ export function ProductCard({
         </div>
       )}
 
-      {/* Imagen del producto (placeholder por ahora) */}
+      {/* Imagen del producto */}
       <div className="aspect-square w-full overflow-hidden bg-gray-100">
-        <div className="flex h-full items-center justify-center">
-          <span className="text-4xl text-gray-400">📦</span>
-        </div>
+        {product.image_url ? (
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <span className="text-4xl text-gray-400">📦</span>
+          </div>
+        )}
       </div>
 
       {/* Contenido */}
