@@ -29,6 +29,8 @@ export interface Database {
           country: string | null
           is_active: boolean
           last_activity_at: string | null
+          whatsapp_number: string | null
+          whatsapp_type: 'personal' | 'business'
           created_at: string
           updated_at: string
         }
@@ -65,6 +67,140 @@ export interface Database {
           country?: string | null
           is_active?: boolean
           last_activity_at?: string | null
+          whatsapp_number?: string | null
+          whatsapp_type?: 'personal' | 'business'
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      user_payment_methods: {
+        Row: {
+          id: string
+          user_id: string
+          method_type: 'BANK_ACCOUNT' | 'PAYPAL' | 'WISE' | 'WESTERN_UNION' | 'YAPE' | 'PLIN' | 'OTHER'
+          provider_name: string | null
+          account_number: string
+          account_holder_name: string | null
+          routing_number: string | null
+          swift_code: string | null
+          currency: 'PEN' | 'USD' | 'EUR'
+          is_default: boolean
+          is_active: boolean
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          method_type: 'BANK_ACCOUNT' | 'PAYPAL' | 'WISE' | 'WESTERN_UNION' | 'YAPE' | 'PLIN' | 'OTHER'
+          provider_name?: string | null
+          account_number: string
+          account_holder_name?: string | null
+          routing_number?: string | null
+          swift_code?: string | null
+          currency?: 'PEN' | 'USD' | 'EUR'
+          is_default?: boolean
+          is_active?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          method_type?: 'BANK_ACCOUNT' | 'PAYPAL' | 'WISE' | 'WESTERN_UNION' | 'YAPE' | 'PLIN' | 'OTHER'
+          provider_name?: string | null
+          account_number?: string
+          account_holder_name?: string | null
+          routing_number?: string | null
+          swift_code?: string | null
+          currency?: 'PEN' | 'USD' | 'EUR'
+          is_default?: boolean
+          is_active?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      user_social_links: {
+        Row: {
+          id: string
+          user_id: string
+          platform: 'FACEBOOK' | 'INSTAGRAM' | 'WHATSAPP' | 'TIKTOK' | 'YOUTUBE' | 'LINKEDIN' | 'TWITTER' | 'OTHER'
+          url: string
+          display_name: string | null
+          is_public: boolean
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          platform: 'FACEBOOK' | 'INSTAGRAM' | 'WHATSAPP' | 'TIKTOK' | 'YOUTUBE' | 'LINKEDIN' | 'TWITTER' | 'OTHER'
+          url: string
+          display_name?: string | null
+          is_public?: boolean
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          platform?: 'FACEBOOK' | 'INSTAGRAM' | 'WHATSAPP' | 'TIKTOK' | 'YOUTUBE' | 'LINKEDIN' | 'TWITTER' | 'OTHER'
+          url?: string
+          display_name?: string | null
+          is_public?: boolean
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      user_stores: {
+        Row: {
+          id: string
+          user_id: string
+          store_name: string | null
+          store_description: string | null
+          store_banner_url: string | null
+          store_logo_url: string | null
+          store_theme: 'default' | 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'dark'
+          is_active: boolean
+          custom_domain: string | null
+          seo_keywords: string | null
+          view_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          store_name?: string | null
+          store_description?: string | null
+          store_banner_url?: string | null
+          store_logo_url?: string | null
+          store_theme?: 'default' | 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'dark'
+          is_active?: boolean
+          custom_domain?: string | null
+          seo_keywords?: string | null
+          view_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          store_name?: string | null
+          store_description?: string | null
+          store_banner_url?: string | null
+          store_logo_url?: string | null
+          store_theme?: 'default' | 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'dark'
+          is_active?: boolean
+          custom_domain?: string | null
+          seo_keywords?: string | null
+          view_count?: number
           created_at?: string
           updated_at?: string
         }

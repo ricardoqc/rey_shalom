@@ -16,16 +16,53 @@ export async function getDashboardStats(userId: string) {
     .eq('id', userId)
     .single()
 
+  // Calcular fecha de inicio del mes (reutilizable)
+  const startOfMonth = new Date()
+  startOfMonth.setDate(1)
+  startOfMonth.setHours(0, 0, 0, 0)
+
   // Calcular ganancias totales (suma de todas las transacciones positivas)
   const { data: transactions } = await supabase
     .from('wallet_transactions')
-    .select('amount')
+    .select('amount, created_at, transaction_type')
     .eq('user_id', userId)
     .eq('status', 'COMPLETED')
     .gt('amount', 0)
 
   const totalEarnings =
     transactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0
+
+  // Calcular ganancias del mes actual
+  const monthlyEarnings =
+    transactions
+      ?.filter((t) => new Date(t.created_at) >= startOfMonth)
+      .reduce((sum, t) => sum + Number(t.amount), 0) || 0
+
+  // Calcular ganancias de referidos (comisiones por ventas de afiliados directos)
+  // Obtener IDs de afiliados directos
+  const { data: directAffiliatesList } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('sponsor_id', userId)
+    .eq('is_active', true)
+
+  let referralsEarnings = 0
+  if (directAffiliatesList && directAffiliatesList.length > 0) {
+    const affiliateIds = directAffiliatesList.map((a) => a.id)
+    
+    // Obtener transacciones de comisión donde related_user_id está en la lista de afiliados
+    const { data: referralTransactions } = await supabase
+      .from('wallet_transactions')
+      .select('amount')
+      .eq('user_id', userId)
+      .eq('status', 'COMPLETED')
+      .eq('transaction_type', 'COMMISSION')
+      .in('related_user_id', affiliateIds)
+      .gt('amount', 0)
+
+    referralsEarnings =
+      referralTransactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0
+  }
 
   // Obtener balance actual (última transacción)
   const { data: lastTransaction } = await supabase
@@ -47,15 +84,12 @@ export async function getDashboardStats(userId: string) {
     .eq('is_active', true)
 
   // Obtener puntos del mes actual
-  const startOfMonth = new Date()
-  startOfMonth.setDate(1)
-  startOfMonth.setHours(0, 0, 0, 0)
 
   const { data: monthlyPoints } = await supabase
     .from('orders')
     .select('points_earned')
     .eq('user_id', userId)
-    .eq('payment_status', 'PAID')
+    .in('payment_status', ['PAID', 'approved'])
     .gte('created_at', startOfMonth.toISOString())
 
   const pointsThisMonth =
@@ -70,6 +104,8 @@ export async function getDashboardStats(userId: string) {
   return {
     profile,
     totalEarnings,
+    monthlyEarnings,
+    referralsEarnings,
     currentBalance,
     directAffiliates: directAffiliates || 0,
     pointsThisMonth,
@@ -102,7 +138,7 @@ export async function getNetworkData(userId: string) {
         .from('orders')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', affiliate.id)
-        .eq('payment_status', 'PAID')
+        .in('payment_status', ['PAID', 'approved'])
         .gte('created_at', startOfMonth.toISOString())
 
       // Calcular ventas totales del mes
@@ -110,7 +146,7 @@ export async function getNetworkData(userId: string) {
         .from('orders')
         .select('total_amount')
         .eq('user_id', affiliate.id)
-        .eq('payment_status', 'PAID')
+        .in('payment_status', ['PAID', 'approved'])
         .gte('created_at', startOfMonth.toISOString())
 
       const monthlySales =

@@ -58,7 +58,10 @@ export async function updateUserProfile(
     return { success: true }
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
+      const firstError = error.errors && error.errors.length > 0 
+        ? error.errors[0].message 
+        : 'Error de validación'
+      return { success: false, error: firstError }
     }
     return { success: false, error: error.message || 'Error al actualizar perfil' }
   }
