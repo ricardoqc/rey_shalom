@@ -47,10 +47,22 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Actualizar sesión
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Actualizar sesión (con manejo de errores)
+  let user = null
+  try {
+    const {
+      data: { user: fetchedUser },
+      error,
+    } = await supabase.auth.getUser()
+    
+    if (!error && fetchedUser) {
+      user = fetchedUser
+    }
+  } catch (error) {
+    // Ignorar errores de fetch en el middleware - la sesión se refrescará en el cliente
+    // Esto previene que errores de red bloqueen el acceso a la aplicación
+    console.debug('Error al obtener usuario en middleware (se ignorará):', error)
+  }
 
   const { pathname } = request.nextUrl
   let response = supabaseResponse
@@ -58,22 +70,27 @@ export async function middleware(request: NextRequest) {
   // 2. RASTREO DE REFERIDOS (MLM) - Funciona en CUALQUIER página
   const refCode = request.nextUrl.searchParams.get('ref')
   if (refCode) {
-    // Validar que el código de referido existe en la base de datos
-    const { data: sponsorProfile } = await supabase
-      .from('profiles')
-      .select('id, referral_code')
-      .eq('referral_code', refCode)
-      .eq('is_active', true)
-      .single()
+    try {
+      // Validar que el código de referido existe en la base de datos
+      const { data: sponsorProfile } = await supabase
+        .from('profiles')
+        .select('id, referral_code')
+        .eq('referral_code', refCode)
+        .eq('is_active', true)
+        .single()
 
-    if (sponsorProfile) {
-      // Guardar en cookie con 30 días de expiración
-      response.cookies.set('sponsor_ref', refCode, {
-        maxAge: 60 * 60 * 24 * 30, // 30 días
-        httpOnly: false, // Necesario para leerlo desde el cliente
-        sameSite: 'lax',
-        path: '/',
-      })
+      if (sponsorProfile) {
+        // Guardar en cookie con 30 días de expiración
+        response.cookies.set('sponsor_ref', refCode, {
+          maxAge: 60 * 60 * 24 * 30, // 30 días
+          httpOnly: false, // Necesario para leerlo desde el cliente
+          sameSite: 'lax',
+          path: '/',
+        })
+      }
+    } catch (error) {
+      // Ignorar errores de base de datos en el middleware
+      console.debug('Error al validar código de referido (se ignorará):', error)
     }
   }
 
@@ -107,18 +124,24 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl)
     }
 
-    // Verificar rol de admin desde metadata o perfil
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', user.id)
-      .single()
+    try {
+      // Verificar rol de admin desde metadata o perfil
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single()
 
-    // Obtener el rol desde user_metadata (configurado en Supabase Auth)
-    const userRole = user.user_metadata?.role || user.app_metadata?.role
+      // Obtener el rol desde user_metadata (configurado en Supabase Auth)
+      const userRole = user.user_metadata?.role || user.app_metadata?.role
 
-    if (userRole !== 'admin') {
-      // No es admin, redirigir al dashboard
+      if (userRole !== 'admin') {
+        // No es admin, redirigir al dashboard
+        return NextResponse.redirect(new URL('/dashboard', request.url))
+      }
+    } catch (error) {
+      // Si hay error al verificar, redirigir al dashboard por seguridad
+      console.debug('Error al verificar rol de admin (se ignorará):', error)
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 

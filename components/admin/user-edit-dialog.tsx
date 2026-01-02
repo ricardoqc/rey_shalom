@@ -4,8 +4,15 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { updateUserProfile } from '@/app/actions/users'
-import { Loader2, X, User as UserIcon } from 'lucide-react'
+import { 
+  updateUserProfile, 
+  getUserAffiliates, 
+  addAffiliate, 
+  removeAffiliate,
+  searchUsersForSponsor 
+} from '@/app/actions/users'
+import { createClient } from '@/utils/supabase/client'
+import { Loader2, X, User as UserIcon, Users, UserPlus, UserMinus, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { Database } from '@/types/supabase'
 import { Badge } from '@/components/ui/badge'
@@ -31,12 +38,38 @@ interface UserEditDialogProps {
   profile: Profile | null
 }
 
+type Affiliate = {
+  id: string
+  public_name: string | null
+  referral_code: string
+  status_level: 'BRONCE' | 'PLATA' | 'ORO'
+  current_points: number
+  created_at: string
+  is_active: boolean
+}
+
+type SponsorOption = {
+  id: string
+  public_name: string | null
+  referral_code: string
+  status_level: 'BRONCE' | 'PLATA' | 'ORO'
+  is_active: boolean
+}
+
 export function UserEditDialog({
   open,
   onOpenChange,
   profile,
 }: UserEditDialogProps) {
   const [loading, setLoading] = useState(false)
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([])
+  const [loadingAffiliates, setLoadingAffiliates] = useState(false)
+  const [sponsor, setSponsor] = useState<{ id: string; name: string; code: string } | null>(null)
+  const [loadingSponsor, setLoadingSponsor] = useState(false)
+  const [showSponsorSearch, setShowSponsorSearch] = useState(false)
+  const [sponsorSearchQuery, setSponsorSearchQuery] = useState('')
+  const [sponsorOptions, setSponsorOptions] = useState<SponsorOption[]>([])
+  const [loadingSponsorSearch, setLoadingSponsorSearch] = useState(false)
   const {
     register,
     handleSubmit,
@@ -61,7 +94,7 @@ export function UserEditDialog({
   const isActive = watch('is_active')
   const statusLevel = watch('status_level')
 
-  // Resetear formulario cuando cambia el perfil o se abre/cierra
+  // Cargar datos del usuario cuando se abre el diálogo
   useEffect(() => {
     if (open && profile) {
       reset({
@@ -74,8 +107,133 @@ export function UserEditDialog({
         status_level: profile.status_level,
         is_active: profile.is_active,
       })
+
+      // Cargar sponsor actual
+      loadSponsor()
+      // Cargar afiliados
+      loadAffiliates()
     }
   }, [open, profile, reset])
+
+  // Cargar sponsor actual
+  const loadSponsor = async () => {
+    if (!profile?.sponsor_id) {
+      setSponsor(null)
+      return
+    }
+
+    setLoadingSponsor(true)
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, public_name, referral_code')
+        .eq('id', profile.sponsor_id)
+        .single()
+
+      if (!error && data) {
+        setSponsor({
+          id: data.id,
+          name: data.public_name || 'Sin nombre',
+          code: data.referral_code,
+        })
+      } else {
+        setSponsor(null)
+      }
+    } catch (error) {
+      console.error('Error al cargar sponsor:', error)
+      setSponsor(null)
+    } finally {
+      setLoadingSponsor(false)
+    }
+  }
+
+  // Cargar afiliados directos
+  const loadAffiliates = async () => {
+    if (!profile) return
+
+    setLoadingAffiliates(true)
+    try {
+      const result = await getUserAffiliates(profile.id)
+      if (result.success && result.data) {
+        setAffiliates(result.data)
+      }
+    } catch (error) {
+      console.error('Error al cargar afiliados:', error)
+    } finally {
+      setLoadingAffiliates(false)
+    }
+  }
+
+  // Buscar usuarios para asignar como sponsor
+  const handleSponsorSearch = async (query: string) => {
+    setSponsorSearchQuery(query)
+    if (!query || query.length < 2) {
+      setSponsorOptions([])
+      return
+    }
+
+    setLoadingSponsorSearch(true)
+    try {
+      const result = await searchUsersForSponsor(query, profile?.id)
+      if (result.success && result.data) {
+        setSponsorOptions(result.data)
+      }
+    } catch (error) {
+      console.error('Error al buscar usuarios:', error)
+    } finally {
+      setLoadingSponsorSearch(false)
+    }
+  }
+
+  // Asignar nuevo sponsor
+  const handleAssignSponsor = async (sponsorId: string) => {
+    if (!profile) return
+
+    setLoading(true)
+    try {
+      const result = await addAffiliate(profile.id, sponsorId)
+      if (result.success) {
+        toast.success('Sponsor asignado exitosamente')
+        setShowSponsorSearch(false)
+        setSponsorSearchQuery('')
+        setSponsorOptions([])
+        await loadSponsor()
+        await loadAffiliates()
+      } else {
+        toast.error(result.error || 'Error al asignar sponsor')
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error inesperado')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Eliminar sponsor
+  const handleRemoveSponsor = async () => {
+    if (!profile) return
+
+    if (!confirm('¿Estás seguro de que deseas eliminar el sponsor de este usuario?')) {
+      return
+    }
+
+    setLoading(true)
+    try {
+      const result = await removeAffiliate(profile.id)
+      if (result.success) {
+        toast.success('Sponsor eliminado exitosamente')
+        setSponsor(null)
+        await loadAffiliates()
+      } else {
+        toast.error(result.error || 'Error al eliminar sponsor')
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error inesperado')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const onSubmit = async (data: UserFormData) => {
     if (!profile) return
@@ -329,6 +487,155 @@ export function UserEditDialog({
                     : 'El usuario está baneado y no puede acceder al sistema'}
                 </p>
               </div>
+            </div>
+          </div>
+
+          {/* Gestión de Afiliados (Solo Super Admin) */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Gestión de Afiliados
+            </h3>
+            
+            {/* Sponsor Actual */}
+            <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-medium text-gray-900">Sponsor Actual</h4>
+                {sponsor && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveSponsor}
+                    disabled={loading}
+                    className="text-xs text-red-600 hover:text-red-800 flex items-center gap-1 disabled:opacity-50"
+                  >
+                    <UserMinus className="h-3 w-3" />
+                    Eliminar
+                  </button>
+                )}
+              </div>
+              {loadingSponsor ? (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Cargando...
+                </div>
+              ) : sponsor ? (
+                <div className="text-sm">
+                  <p className="font-medium text-gray-900">{sponsor.name}</p>
+                  <p className="text-gray-500">Código: {sponsor.code}</p>
+                </div>
+              ) : (
+                <div className="text-sm text-gray-500">
+                  Este usuario no tiene sponsor asignado
+                </div>
+              )}
+              
+              {/* Botón para agregar/cambiar sponsor */}
+              {!showSponsorSearch ? (
+                <button
+                  type="button"
+                  onClick={() => setShowSponsorSearch(true)}
+                  disabled={loading}
+                  className="mt-3 px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1"
+                >
+                  <UserPlus className="h-3 w-3" />
+                  {sponsor ? 'Cambiar Sponsor' : 'Asignar Sponsor'}
+                </button>
+              ) : (
+                <div className="mt-3 space-y-2">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Buscar por nombre o código de referido..."
+                      value={sponsorSearchQuery}
+                      onChange={(e) => handleSponsorSearch(e.target.value)}
+                      className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  {loadingSponsorSearch && (
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Buscando...
+                    </div>
+                  )}
+                  {sponsorOptions.length > 0 && (
+                    <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md">
+                      {sponsorOptions.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => handleAssignSponsor(option.id)}
+                          disabled={loading}
+                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 border-b border-gray-100 last:border-b-0 disabled:opacity-50"
+                        >
+                          <div className="font-medium text-gray-900">
+                            {option.public_name || 'Sin nombre'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {option.referral_code} • {option.status_level}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSponsorSearch(false)
+                      setSponsorSearchQuery('')
+                      setSponsorOptions([])
+                    }}
+                    className="text-xs text-gray-600 hover:text-gray-800"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Lista de Afiliados Directos */}
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h4 className="text-sm font-medium text-gray-900 mb-3">
+                Afiliados Directos ({affiliates.length})
+              </h4>
+              {loadingAffiliates ? (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Cargando afiliados...
+                </div>
+              ) : affiliates.length > 0 ? (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {affiliates.map((affiliate) => (
+                    <div
+                      key={affiliate.id}
+                      className="flex items-center justify-between p-2 bg-white rounded border border-gray-200"
+                    >
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {affiliate.public_name || 'Sin nombre'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {affiliate.referral_code} • {affiliate.status_level} •{' '}
+                          {affiliate.current_points.toLocaleString('es-PE')} pts
+                        </p>
+                      </div>
+                      <Badge
+                        className={
+                          affiliate.is_active
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }
+                      >
+                        {affiliate.is_active ? 'Activo' : 'Inactivo'}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Este usuario no tiene afiliados directos
+                </p>
+              )}
             </div>
           </div>
 

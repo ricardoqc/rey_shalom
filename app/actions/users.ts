@@ -81,3 +81,251 @@ export async function getUserRole(userId: string): Promise<'admin' | 'user'> {
   return 'user'
 }
 
+/**
+ * Obtener lista de afiliados directos de un usuario
+ */
+export async function getUserAffiliates(userId: string) {
+  const supabase = await createClient()
+
+  // Verificar que el usuario es admin
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+
+  if (!currentUser) {
+    return { success: false, error: 'No autenticado', data: null }
+  }
+
+  const userRole = currentUser.user_metadata?.role || currentUser.app_metadata?.role
+  if (userRole !== 'admin') {
+    return { success: false, error: 'No autorizado. Solo administradores pueden ver afiliados.', data: null }
+  }
+
+  try {
+    // Obtener afiliados directos (donde sponsor_id = userId)
+    const { data: affiliates, error } = await supabase
+      .from('profiles')
+      .select('id, public_name, referral_code, status_level, current_points, created_at, is_active')
+      .eq('sponsor_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    return { success: true, data: affiliates || [], error: null }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Error al obtener afiliados', data: null }
+  }
+}
+
+/**
+ * Agregar un afiliado a un usuario (cambiar sponsor_id)
+ * Solo el super admin puede hacer esto
+ */
+export async function addAffiliate(userId: string, sponsorId: string) {
+  const supabase = await createClient()
+
+  // Verificar que el usuario es admin
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+
+  if (!currentUser) {
+    return { success: false, error: 'No autenticado' }
+  }
+
+  const userRole = currentUser.user_metadata?.role || currentUser.app_metadata?.role
+  if (userRole !== 'admin') {
+    return { success: false, error: 'No autorizado. Solo administradores pueden gestionar afiliados.' }
+  }
+
+  try {
+    // Validar que ambos usuarios existen
+    const { data: userProfile, error: userError } = await supabase
+      .from('profiles')
+      .select('id, sponsor_id')
+      .eq('id', userId)
+      .single()
+
+    if (userError || !userProfile) {
+      return { success: false, error: 'Usuario no encontrado' }
+    }
+
+    const { data: sponsorProfile, error: sponsorError } = await supabase
+      .from('profiles')
+      .select('id, is_active')
+      .eq('id', sponsorId)
+      .single()
+
+    if (sponsorError || !sponsorProfile) {
+      return { success: false, error: 'Sponsor no encontrado' }
+    }
+
+    if (!sponsorProfile.is_active) {
+      return { success: false, error: 'El sponsor no está activo' }
+    }
+
+    // Validar que no se cree un ciclo (el sponsor no puede ser el mismo usuario o un descendiente)
+    if (userId === sponsorId) {
+      return { success: false, error: 'Un usuario no puede ser su propio sponsor' }
+    }
+
+    // Verificar que el sponsor no sea un descendiente del usuario
+    // Subimos por la cadena de sponsors del sponsorId para ver si encontramos userId
+    let currentSponsorId: string | null = sponsorId
+    let depth = 0
+    const maxDepth = 20 // Prevenir bucles infinitos
+
+    while (currentSponsorId && depth < maxDepth) {
+      // Si encontramos el userId en la cadena, entonces es un ciclo
+      if (currentSponsorId === userId) {
+        return { success: false, error: 'No se puede asignar un descendiente como sponsor (crearía un ciclo)' }
+      }
+
+      // Obtener el sponsor del sponsor actual
+      const { data: sponsorProfile } = await supabase
+        .from('profiles')
+        .select('sponsor_id')
+        .eq('id', currentSponsorId)
+        .eq('is_active', true)
+        .single()
+
+      currentSponsorId = sponsorProfile?.sponsor_id || null
+      depth++
+    }
+
+    // Actualizar el sponsor_id
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ sponsor_id: sponsorId, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+
+    if (updateError) throw updateError
+
+    // Actualizar la genealogía MLM usando la función SQL
+    const { error: genealogyError } = await supabase.rpc('update_mlm_genealogy', {
+      p_user_id: userId,
+      p_sponsor_id: sponsorId,
+    })
+
+    if (genealogyError) {
+      console.error('Error al actualizar genealogía:', genealogyError)
+      // No fallar si la genealogía falla, pero registrar el error
+    }
+
+    revalidatePath('/admin/users')
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Error al agregar afiliado' }
+  }
+}
+
+/**
+ * Eliminar un afiliado (poner sponsor_id a NULL)
+ * Solo el super admin puede hacer esto
+ */
+export async function removeAffiliate(userId: string) {
+  const supabase = await createClient()
+
+  // Verificar que el usuario es admin
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+
+  if (!currentUser) {
+    return { success: false, error: 'No autenticado' }
+  }
+
+  const userRole = currentUser.user_metadata?.role || currentUser.app_metadata?.role
+  if (userRole !== 'admin') {
+    return { success: false, error: 'No autorizado. Solo administradores pueden gestionar afiliados.' }
+  }
+
+  try {
+    // Verificar que el usuario existe
+    const { data: userProfile, error: userError } = await supabase
+      .from('profiles')
+      .select('id, sponsor_id')
+      .eq('id', userId)
+      .single()
+
+    if (userError || !userProfile) {
+      return { success: false, error: 'Usuario no encontrado' }
+    }
+
+    if (!userProfile.sponsor_id) {
+      return { success: false, error: 'El usuario no tiene sponsor asignado' }
+    }
+
+    // Eliminar el sponsor_id
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ sponsor_id: null, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+
+    if (updateError) throw updateError
+
+    // Eliminar registros de genealogía para este usuario
+    const { error: genealogyError } = await supabase
+      .from('mlm_genealogy')
+      .delete()
+      .eq('user_id', userId)
+
+    if (genealogyError) {
+      console.error('Error al eliminar genealogía:', genealogyError)
+      // No fallar si la genealogía falla, pero registrar el error
+    }
+
+    revalidatePath('/admin/users')
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Error al eliminar afiliado' }
+  }
+}
+
+/**
+ * Buscar usuarios por nombre o código de referido (para el selector de sponsor)
+ */
+export async function searchUsersForSponsor(searchQuery: string, excludeUserId?: string) {
+  const supabase = await createClient()
+
+  // Verificar que el usuario es admin
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+
+  if (!currentUser) {
+    return { success: false, error: 'No autenticado', data: [] }
+  }
+
+  const userRole = currentUser.user_metadata?.role || currentUser.app_metadata?.role
+  if (userRole !== 'admin') {
+    return { success: false, error: 'No autorizado', data: [] }
+  }
+
+  try {
+    let query = supabase
+      .from('profiles')
+      .select('id, public_name, referral_code, status_level, is_active')
+      .eq('is_active', true)
+      .limit(20)
+
+    if (excludeUserId) {
+      query = query.neq('id', excludeUserId)
+    }
+
+    if (searchQuery) {
+      query = query.or(
+        `public_name.ilike.%${searchQuery}%,referral_code.ilike.%${searchQuery}%`
+      )
+    }
+
+    const { data: users, error } = await query.order('public_name', { ascending: true })
+
+    if (error) throw error
+
+    return { success: true, data: users || [], error: null }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Error al buscar usuarios', data: [] }
+  }
+}
+

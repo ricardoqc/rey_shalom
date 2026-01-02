@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rey Shalom ERP - Aplicación Next.js
 
-## Getting Started
+Esta es la aplicación frontend y backend del sistema Rey Shalom ERP, construida con Next.js 16.
 
-First, run the development server:
+## 🚀 Inicio Rápido
+
+### Instalación
 
 ```bash
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp env.example .env.local
+# Editar .env.local con tus credenciales de Supabase
+
+# Iniciar servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📋 Prerrequisitos
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Antes de iniciar la aplicación, asegúrate de:
 
-## Learn More
+1. **Configurar Supabase**: Ver [../docs/SETUP_ENV.md](../docs/SETUP_ENV.md)
+2. **Configurar Base de Datos**: Ejecutar scripts SQL en `../database/` (ver [../database/README.md](../database/README.md))
+3. **Configurar Storage**: Crear buckets y ejecutar políticas (ver [../docs/ADMIN_SETUP.md](../docs/ADMIN_SETUP.md))
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Estructura
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/
+├── app/                    # App Router de Next.js
+│   ├── auth/              # Rutas de autenticación
+│   ├── dashboard/         # Dashboard de usuario
+│   ├── admin/             # Panel de administración
+│   ├── shop/              # Tienda pública
+│   └── checkout/          # Proceso de compra
+├── components/            # Componentes React
+│   ├── admin/            # Componentes del panel admin
+│   ├── auth/             # Componentes de autenticación
+│   ├── dashboard/        # Componentes del dashboard
+│   └── ui/               # Componentes UI base
+├── actions/               # Server Actions
+├── hooks/                 # Custom React Hooks
+├── lib/                   # Librerías y utilidades
+├── types/                 # Tipos TypeScript
+├── utils/                 # Utilidades
+└── middleware.ts         # Middleware de Next.js
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ Scripts Disponibles
 
-## Deploy on Vercel
+```bash
+npm run dev      # Desarrollo (puerto 3000)
+npm run build    # Construir para producción
+npm run start    # Iniciar servidor de producción
+npm run lint     # Ejecutar ESLint
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📚 Documentación
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Configuración General**: Ver [../README.md](../README.md)
+- **Setup Detallado**: Ver [../docs/README_SETUP.md](../docs/README_SETUP.md)
+- **Configuración Admin**: Ver [../docs/ADMIN_SETUP.md](../docs/ADMIN_SETUP.md)
+- **Variables de Entorno**: Ver [../docs/SETUP_ENV.md](../docs/SETUP_ENV.md)
+
+## 🔧 Tecnologías
+
+- **Framework**: Next.js 16 (App Router)
+- **React**: 19.2.1
+- **TypeScript**: 5.x
+- **Estilos**: Tailwind CSS 4
+- **Validación**: Zod + React Hook Form
+- **Base de Datos**: Supabase (PostgreSQL)
+- **Autenticación**: Supabase Auth
+- **Storage**: Supabase Storage
+
+## 📝 Notas
+
+- Las variables de entorno deben estar en `.env.local` (no se sube a Git)
+- El middleware protege las rutas `/dashboard/*` y `/admin/*`
+- Los Server Actions están en `app/actions/`
+- Los tipos de Supabase se generan desde la base de datos
+
+---
+
+Para más información, consulta la [documentación principal](../README.md).

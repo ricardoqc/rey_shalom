@@ -36,6 +36,29 @@ export async function createClient() {
           }
         },
       },
+      global: {
+        fetch: (url, options = {}) => {
+          // Crear un AbortController para timeout
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 segundos
+
+          return fetch(url, {
+            ...options,
+            signal: options.signal || controller.signal,
+          })
+            .finally(() => clearTimeout(timeoutId))
+            .catch((error) => {
+              // Silenciar errores de red esperados - se manejarán en el componente
+              if (error.name === 'AbortError' || error.name === 'TypeError') {
+                // Solo loguear en desarrollo, no en producción
+                if (process.env.NODE_ENV === 'development') {
+                  console.debug('Error de red en Supabase (se ignorará):', error.message)
+                }
+              }
+              throw error
+            })
+        },
+      },
     }
   )
 }
