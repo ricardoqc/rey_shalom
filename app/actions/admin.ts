@@ -104,9 +104,10 @@ export async function updateProduct(
   try {
     const validatedData = productSchema.partial().parse(data)
 
+    // @ts-expect-error - TypeScript inference issue with products table
     const { error } = await supabase
       .from('products')
-      .update(validatedData as any)
+      .update(validatedData)
       .eq('id', id)
 
     if (error) throw error
