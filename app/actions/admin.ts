@@ -75,7 +75,7 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
     return { success: true, product }
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
+      return { success: false, error: error.issues[0]?.message || 'Error de validación' }
     }
     return { success: false, error: error.message || 'Error al crear producto' }
   }
