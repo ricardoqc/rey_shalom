@@ -106,7 +106,7 @@ export async function updateProduct(
 
     const { error } = await supabase
       .from('products')
-      .update(validatedData)
+      .update(validatedData as any)
       .eq('id', id)
 
     if (error) throw error
@@ -116,6 +116,9 @@ export async function updateProduct(
 
     return { success: true }
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.issues[0]?.message || 'Error de validación' }
+    }
     return { success: false, error: error.message || 'Error al actualizar producto' }
   }
 }
