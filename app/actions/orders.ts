@@ -44,6 +44,7 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
 
   try {
     // PASO 1: Obtener la orden con sus items y productos
+    // @ts-ignore - TypeScript inference issue with orders table
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select(`
@@ -66,7 +67,7 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
     }
 
     // Validar que la orden esté en estado pendiente
-    if (order.payment_status !== 'pending') {
+    if ((order as any).payment_status !== 'pending') {
       return {
         success: false,
         error: `La orden ya fue procesada. Estado actual: ${order.payment_status}`,
@@ -74,12 +75,12 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
     }
 
     // Validar que tenga usuario asociado
-    if (!order.user_id) {
+    if (!(order as any).user_id) {
       return { success: false, error: 'La orden no tiene usuario asociado' }
     }
 
     // PASO 2: LÓGICA DE PACKS - Verificar si hay productos pack y actualizar rango
-    const packProducts = order.order_items?.filter(
+    const packProducts = (order as any).order_items?.filter(
       (item: any) => item.products?.is_pack === true && item.products?.target_rank
     ) || []
 
@@ -115,15 +116,15 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
         const { data: userProfile } = await supabase
           .from('profiles')
           .select('status_level')
-          .eq('id', order.user_id)
+          .eq('id', (order as any).user_id)
           .single()
 
         // Solo actualizar si el nuevo rango es mayor que el actual
-        if (userProfile && rankOrder[highestRank] > rankOrder[userProfile.status_level as 'BRONCE' | 'PLATA' | 'ORO']) {
+        if (userProfile && rankOrder[highestRank] > rankOrder[(userProfile as any).status_level as 'BRONCE' | 'PLATA' | 'ORO']) {
           const { error: rankUpdateError } = await supabase
             .from('profiles')
             .update({ status_level: highestRank })
-            .eq('id', order.user_id)
+            .eq('id', (order as any).user_id)
 
           if (rankUpdateError) {
             console.error('Error actualizando rango del usuario:', rankUpdateError)
@@ -135,12 +136,12 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
 
     // PASO 3: Confirmar stock reservado (convertir reservado en descuento real)
     // Necesitamos confirmar el stock para cada item de la orden
-    if (order.fulfillment_warehouse_id && order.order_items) {
-      for (const item of order.order_items) {
+    if ((order as any).fulfillment_warehouse_id && (order as any).order_items) {
+      for (const item of (order as any).order_items) {
         const { error: confirmStockError } = await supabase.rpc('confirm_reserved_stock', {
-          p_warehouse_id: order.fulfillment_warehouse_id,
-          p_product_id: item.product_id,
-          p_quantity: item.quantity,
+          p_warehouse_id: (order as any).fulfillment_warehouse_id,
+          p_product_id: (item as any).product_id,
+          p_quantity: (item as any).quantity,
         })
 
         if (confirmStockError) {
@@ -152,6 +153,7 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
 
     // PASO 4: Actualizar payment_status a 'approved'
     // Nota: Usamos 'approved' en lugar de 'PAID' para diferenciar pagos manuales
+    // @ts-ignore - TypeScript inference issue with orders table
     const { error: updateStatusError } = await supabase
       .from('orders')
       .update({
@@ -183,6 +185,7 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
     // luego lo cambiamos a 'approved' para mantener consistencia con nuestro sistema
     
     // Actualizar temporalmente a 'PAID' para que calculate_commissions funcione
+    // @ts-ignore - TypeScript inference issue with orders table
     const { error: tempPaidError } = await supabase
       .from('orders')
       .update({ payment_status: 'PAID' })
@@ -204,6 +207,7 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
       }
 
       // Actualizar de vuelta a 'approved' para mantener consistencia con nuestro sistema
+      // @ts-ignore - TypeScript inference issue with orders table
       const { error: finalStatusError } = await supabase
         .from('orders')
         .update({ payment_status: 'approved' })
@@ -258,6 +262,7 @@ export async function rejectOrder(
 
   try {
     // Obtener la orden con sus items
+    // @ts-ignore - TypeScript inference issue with orders table
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select(`
@@ -272,20 +277,20 @@ export async function rejectOrder(
     }
 
     // Validar que la orden esté en estado pendiente
-    if (order.payment_status !== 'pending') {
+    if ((order as any).payment_status !== 'pending') {
       return {
         success: false,
-        error: `La orden ya fue procesada. Estado actual: ${order.payment_status}`,
+        error: `La orden ya fue procesada. Estado actual: ${(order as any).payment_status}`,
       }
     }
 
     // Liberar stock reservado para cada item
-    if (order.fulfillment_warehouse_id && order.order_items) {
-      for (const item of order.order_items) {
+    if ((order as any).fulfillment_warehouse_id && (order as any).order_items) {
+      for (const item of (order as any).order_items) {
         const { error: releaseStockError } = await supabase.rpc('release_reserved_stock', {
-          p_warehouse_id: order.fulfillment_warehouse_id,
-          p_product_id: item.product_id,
-          p_quantity: item.quantity,
+          p_warehouse_id: (order as any).fulfillment_warehouse_id,
+          p_product_id: (item as any).product_id,
+          p_quantity: (item as any).quantity,
         })
 
         if (releaseStockError) {
@@ -296,6 +301,7 @@ export async function rejectOrder(
     }
 
     // Actualizar estado a 'rejected'
+    // @ts-ignore - TypeScript inference issue with orders table
     const { error: updateError } = await supabase
       .from('orders')
       .update({
