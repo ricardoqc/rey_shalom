@@ -51,6 +51,7 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
     // Crear producto
     const { data: product, error } = await supabase
       .from('products')
+      // @ts-ignore - TypeScript inference issue with products table
       .insert({
         sku: validatedData.sku,
         name: validatedData.name,
@@ -63,7 +64,7 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
         is_active: true,
         is_pack: false,
         is_featured: false,
-      } as any)
+      })
       .select()
       .single()
 
@@ -194,6 +195,7 @@ export async function addStock(
       // Actualizar stock existente (sumar)
       const { error } = await supabase
         .from('inventory_items')
+        // @ts-ignore - TypeScript inference issue with inventory_items table
         .update({
           quantity: existingInventory.quantity + quantity,
         })
@@ -203,6 +205,7 @@ export async function addStock(
       if (error) throw error
     } else {
       // Crear nuevo registro de inventario
+      // @ts-ignore - TypeScript inference issue with inventory_items table
       const { error } = await supabase.from('inventory_items').insert({
         product_id: productId,
         warehouse_id: warehouseId,
