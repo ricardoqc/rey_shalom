@@ -3,6 +3,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import type { Database } from '@/types/supabase'
+
+type ProductInsert = Database['public']['Tables']['products']['Insert']
 
 // Schema de validación para productos
 const productSchema = z.object({
@@ -49,13 +52,23 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
     }
 
     // Crear producto
+    const productData: ProductInsert = {
+      sku: validatedData.sku,
+      name: validatedData.name,
+      description: validatedData.description || null,
+      base_price: validatedData.base_price,
+      points_per_unit: validatedData.points_per_unit,
+      category: validatedData.category || null,
+      brand: validatedData.brand || null,
+      image_url: validatedData.image_url && validatedData.image_url !== '' ? validatedData.image_url : null,
+      is_active: true,
+      is_pack: false,
+      is_featured: false,
+    }
+
     const { data: product, error } = await supabase
       .from('products')
-      .insert({
-        ...validatedData,
-        image_url: validatedData.image_url || null,
-        is_active: true,
-      })
+      .insert(productData)
       .select()
       .single()
 
