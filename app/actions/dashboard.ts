@@ -10,6 +10,7 @@ export async function getDashboardStats(userId: string) {
   const supabase = await createClient()
 
   // Obtener perfil
+  // @ts-ignore - TypeScript inference issue with profiles table
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
@@ -41,6 +42,7 @@ export async function getDashboardStats(userId: string) {
 
   // Calcular ganancias de referidos (comisiones por ventas de afiliados directos)
   // Obtener IDs de afiliados directos
+  // @ts-ignore - TypeScript inference issue with profiles table
   const { data: directAffiliatesList } = await supabase
     .from('profiles')
     .select('id')
@@ -49,7 +51,7 @@ export async function getDashboardStats(userId: string) {
 
   let referralsEarnings = 0
   if (directAffiliatesList && directAffiliatesList.length > 0) {
-    const affiliateIds = directAffiliatesList.map((a) => a.id)
+    const affiliateIds = (directAffiliatesList as any).map((a: any) => a.id)
     
     // Obtener transacciones de comisión donde related_user_id está en la lista de afiliados
     // @ts-ignore - TypeScript inference issue with wallet_transactions table
@@ -80,6 +82,7 @@ export async function getDashboardStats(userId: string) {
   const currentBalance = (lastTransaction as any)?.balance_after || 0
 
   // Contar afiliados directos (donde sponsor_id = userId)
+  // @ts-ignore - TypeScript inference issue with profiles table
   const { count: directAffiliates } = await supabase
     .from('profiles')
     .select('*', { count: 'exact', head: true })
@@ -121,6 +124,7 @@ export async function getNetworkData(userId: string) {
   const supabase = await createClient()
 
   // Obtener afiliados directos (nivel 1)
+  // @ts-ignore - TypeScript inference issue with profiles table
   const { data: directAffiliates } = await supabase
     .from('profiles')
     .select('id, public_name, referral_code, status_level, current_points, created_at')
@@ -132,7 +136,7 @@ export async function getNetworkData(userId: string) {
 
   // Para cada afiliado directo, obtener sus ventas del mes
   const networkData = await Promise.all(
-    directAffiliates.map(async (affiliate) => {
+    (directAffiliates as any).map(async (affiliate: any) => {
       const startOfMonth = new Date()
       startOfMonth.setDate(1)
       startOfMonth.setHours(0, 0, 0, 0)
