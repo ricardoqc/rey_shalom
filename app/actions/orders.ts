@@ -70,7 +70,7 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
     if ((order as any).payment_status !== 'pending') {
       return {
         success: false,
-        error: `La orden ya fue procesada. Estado actual: ${order.payment_status}`,
+        error: `La orden ya fue procesada. Estado actual: ${(order as any).payment_status}`,
       }
     }
 
