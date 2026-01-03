@@ -184,6 +184,7 @@ export async function addStock(
     }
 
     // Verificar si existe el registro de inventario
+    // @ts-ignore - TypeScript inference issue with inventory_items table
     const { data: existingInventory } = await supabase
       .from('inventory_items')
       .select('quantity')
@@ -197,7 +198,7 @@ export async function addStock(
         .from('inventory_items')
         // @ts-ignore - TypeScript inference issue with inventory_items table
         .update({
-          quantity: existingInventory.quantity + quantity,
+          quantity: (existingInventory as any).quantity + quantity,
         })
         .eq('product_id', productId)
         .eq('warehouse_id', warehouseId)
