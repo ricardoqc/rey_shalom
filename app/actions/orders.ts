@@ -113,6 +113,7 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
 
       if (highestRank) {
         // Obtener el rango actual del usuario
+        // @ts-ignore - TypeScript inference issue with profiles table
         const { data: userProfile } = await supabase
           .from('profiles')
           .select('status_level')
@@ -121,6 +122,7 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
 
         // Solo actualizar si el nuevo rango es mayor que el actual
         if (userProfile && rankOrder[highestRank] > rankOrder[(userProfile as any).status_level as 'BRONCE' | 'PLATA' | 'ORO']) {
+          // @ts-ignore - TypeScript inference issue with profiles table
           const { error: rankUpdateError } = await supabase
             .from('profiles')
             .update({ status_level: highestRank })
