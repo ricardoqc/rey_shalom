@@ -25,7 +25,7 @@ export default async function ShopPage({
       .eq('id', user.id)
       .single()
 
-    userRank = (profile?.status_level as 'BRONCE' | 'PLATA' | 'ORO') || null
+    userRank = ((profile as any)?.status_level as 'BRONCE' | 'PLATA' | 'ORO') || null
   }
 
   // Obtener requisitos de rango para calcular descuentos
@@ -40,7 +40,7 @@ export default async function ShopPage({
 
   // Obtener inventario para cada producto
   const productsWithInventory = await Promise.all(
-    products.map(async (product) => {
+    products.map(async (product: any) => {
       const inventory = await getProductInventory(product.id)
       return { product, inventory }
     })

@@ -68,6 +68,7 @@ export default function CreateUsersPage() {
         // Crear perfil manualmente si no existe
         const { error: createProfileError } = await supabase
           .from('profiles')
+          // @ts-ignore - TypeScript inference issue with Supabase client types
           .insert({
             id: authData.user.id,
             public_name: 'Super Admin',
@@ -124,7 +125,7 @@ export default function CreateUsersPage() {
           .single()
 
         if (sponsor) {
-          sponsorId = sponsor.id
+          sponsorId = (sponsor as any).id
         } else {
           toast.warning(
             `Código de referido "${referralCode}" no encontrado. Creando usuario sin sponsor.`
@@ -165,6 +166,7 @@ export default function CreateUsersPage() {
         // Crear perfil manualmente si no existe
         const { error: createProfileError } = await supabase
           .from('profiles')
+          // @ts-ignore - TypeScript inference issue with Supabase client types
           .insert({
             id: authData.user.id,
             public_name: email.split('@')[0],

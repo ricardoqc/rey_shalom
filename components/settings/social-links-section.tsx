@@ -25,8 +25,13 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    platform: 'FACEBOOK' as const,
+  const [formData, setFormData] = useState<{
+    platform: 'FACEBOOK' | 'INSTAGRAM' | 'WHATSAPP' | 'TIKTOK' | 'YOUTUBE' | 'LINKEDIN' | 'TWITTER' | 'OTHER'
+    url: string
+    display_name: string
+    is_public: boolean
+  }>({
+    platform: 'FACEBOOK',
     url: '',
     display_name: '',
     is_public: true,

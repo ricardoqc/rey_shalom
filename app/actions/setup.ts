@@ -53,7 +53,7 @@ export async function createDefaultAdmin() {
       (u) => u.email === adminEmail
     )
 
-    let userId: string
+    let userId: string | undefined
 
     if (existingUser) {
       userId = existingUser.id
@@ -160,6 +160,14 @@ export async function createDefaultAdmin() {
       }
     }
 
+    // Verificar que userId esté definido
+    if (!userId) {
+      return {
+        success: false,
+        error: 'Error: No se pudo obtener el ID del usuario',
+      }
+    }
+
     // Esperar un momento para que el trigger se ejecute (si existe)
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
@@ -177,6 +185,7 @@ export async function createDefaultAdmin() {
 
     if (!existingProfile) {
       // Crear perfil manualmente
+      // @ts-ignore - TypeScript inference issue with Supabase client types
       const { error: profileError } = await supabase.from('profiles').insert({
         id: userId,
         public_name: 'Super Admin',
@@ -199,6 +208,7 @@ export async function createDefaultAdmin() {
       // Actualizar perfil existente
       const { error: updateError } = await supabase
         .from('profiles')
+        // @ts-ignore - TypeScript inference issue with Supabase client types
         .update({
           status_level: 'ORO',
           current_points: 9999,

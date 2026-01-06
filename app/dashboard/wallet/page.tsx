@@ -151,7 +151,7 @@ export default async function WalletPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {transactions.map((transaction) => {
+                  {transactions.map((transaction: any) => {
                     const isPositive = Number(transaction.amount) > 0
                     return (
                       <tr key={transaction.id}>

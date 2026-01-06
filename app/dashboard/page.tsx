@@ -96,7 +96,7 @@ export default async function DashboardPage() {
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-500">Puntos</p>
               <p className="mt-1 text-3xl font-bold text-gray-900">
-                {stats.profile.total_points_earned || 0}
+                {(stats.profile as any).total_points_earned || 0}
               </p>
               <p className="mt-1 text-xs text-gray-500">
                 <span className="font-medium text-gray-700">{stats.pointsThisMonth}</span> puntos este mes
@@ -106,7 +106,7 @@ export default async function DashboardPage() {
         </div>
         <StatsCard
           title="Rango Actual"
-          value={stats.profile.status_level || 'BRONCE'}
+          value={(stats.profile as any).status_level || 'BRONCE'}
           icon={Award}
           iconColor="text-purple-600"
         />
@@ -120,7 +120,7 @@ export default async function DashboardPage() {
 
       {/* KPI Cards - Segunda fila */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <Link href={`/store/${stats.profile.referral_code}`} target="_blank">
+        <Link href={`/store/${(stats.profile as any).referral_code}`} target="_blank">
           <div className="rounded-lg bg-white p-6 shadow hover:shadow-md transition-shadow cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500">
             <div className="flex items-center justify-between">
               <div>
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
       />
 
       {/* Herramienta de Marketing - Link de Referido */}
-      <ReferralLink referralCode={stats.profile.referral_code} />
+      <ReferralLink referralCode={(stats.profile as any).referral_code} />
     </div>
   )
 }

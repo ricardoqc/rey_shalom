@@ -154,7 +154,7 @@ export function InventoryManager({
                             onClick={() =>
                               handleAddStock(product.id, warehouse.id)
                             }
-                            disabled={isLoading || !inputValue || parseInt(inputValue) <= 0}
+                            disabled={isLoading || !inputValue || (inputValue ? parseInt(String(inputValue)) <= 0 : true)}
                             className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {isLoading ? (

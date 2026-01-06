@@ -133,9 +133,9 @@ export function UserEditDialog({
 
       if (!error && data) {
         setSponsor({
-          id: data.id,
-          name: data.public_name || 'Sin nombre',
-          code: data.referral_code,
+          id: (data as any).id,
+          name: (data as any).public_name || 'Sin nombre',
+          code: (data as any).referral_code,
         })
       } else {
         setSponsor(null)
@@ -241,12 +241,12 @@ export function UserEditDialog({
     setLoading(true)
     try {
       const result = await updateUserProfile(profile.id, {
-        public_name: data.public_name || null,
-        dni: data.dni || null,
-        phone: data.phone || null,
-        address: data.address || null,
-        city: data.city || null,
-        country: data.country || null,
+        public_name: data.public_name || undefined,
+        dni: data.dni || undefined,
+        phone: data.phone || undefined,
+        address: data.address || undefined,
+        city: data.city || undefined,
+        country: data.country || undefined,
         status_level: data.status_level,
         is_active: data.is_active,
       })

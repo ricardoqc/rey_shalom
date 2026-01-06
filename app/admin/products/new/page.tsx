@@ -71,7 +71,7 @@ export default function NewProductPage() {
   const handleImageUpload = async () => {
     if (!imageFile) return null
 
-    const url = await uploadImage(imageFile, 'products')
+    const url = await uploadImage(imageFile, 'product-images')
     if (url) {
       setValue('image_url', url)
     }
@@ -83,7 +83,7 @@ export default function NewProductPage() {
       // Subir imagen si hay una seleccionada
       let imageUrl = data.image_url
       if (imageFile && !imageUrl) {
-        imageUrl = await handleImageUpload()
+        imageUrl = await handleImageUpload() || undefined
         if (!imageUrl) {
           toast.error('Error al subir la imagen')
           return

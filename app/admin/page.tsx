@@ -27,7 +27,7 @@ export default async function AdminDashboardPage() {
     .eq('payment_status', 'PAID')
 
   const totalRevenue =
-    orders?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0
+    orders?.reduce((sum, order: any) => sum + Number(order.total_amount), 0) || 0
 
   return (
     <div className="space-y-6">
