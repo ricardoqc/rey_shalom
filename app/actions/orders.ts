@@ -185,44 +185,20 @@ export async function approveOrder(orderId: string): Promise<ApproveOrderResult>
     }
 
     // PASO 6: Calcular comisiones MLM
-    // Nota: La función calculate_commissions espera payment_status = 'PAID'
-    // Actualizamos temporalmente a 'PAID' para que la función lo acepte,
-    // luego lo cambiamos a 'approved' para mantener consistencia con nuestro sistema
-    
-    // Actualizar temporalmente a 'PAID' para que calculate_commissions funcione
-    const { error: tempPaidError } = await supabase
-      .from('orders')
-      // @ts-ignore - TypeScript inference issue with orders table
-      .update({ payment_status: 'PAID' })
-      .eq('id', orderId)
+    // Nota: El trigger también calculará las comisiones automáticamente cuando
+    // el payment_status cambie a 'approved', pero lo llamamos manualmente aquí
+    // para asegurar que se ejecute incluso si el trigger falla.
+    // La función calculate_commissions ahora acepta tanto 'PAID' como 'approved'
+    // @ts-ignore - TypeScript inference issue with Supabase RPC functions
+    const { error: commissionError } = await supabase.rpc('calculate_commissions', {
+      p_order_id: orderId,
+    })
 
-    if (tempPaidError) {
-      console.error('Error al preparar cálculo de comisiones:', tempPaidError)
-      // Continuar aunque falle, pero registrar el error
-    } else {
-      // Ejecutar cálculo de comisiones solo si la actualización fue exitosa
-      // @ts-ignore - TypeScript inference issue with Supabase RPC functions
-      const { error: commissionError } = await supabase.rpc('calculate_commissions', {
-        p_order_id: orderId,
-      })
-
-      if (commissionError) {
-        console.error('Error calculando comisiones:', commissionError)
-        // No fallar la orden por esto, pero registrar el error
-        // Las comisiones pueden calcularse manualmente después si es necesario
-      }
-
-      // Actualizar de vuelta a 'approved' para mantener consistencia con nuestro sistema
-      const { error: finalStatusError } = await supabase
-        .from('orders')
-        // @ts-ignore - TypeScript inference issue with orders table
-        .update({ payment_status: 'approved' })
-        .eq('id', orderId)
-
-      if (finalStatusError) {
-        console.error('Error actualizando estado final:', finalStatusError)
-        // Si falla, dejar en 'PAID' es aceptable, pero registrar el error
-      }
+    if (commissionError) {
+      console.error('Error calculando comisiones:', commissionError)
+      // No fallar la orden por esto, pero registrar el error
+      // Las comisiones pueden calcularse manualmente después si es necesario
+      // El trigger también intentará calcularlas cuando se actualice el payment_status
     }
 
     revalidatePath('/admin/orders')

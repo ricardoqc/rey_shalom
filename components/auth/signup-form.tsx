@@ -87,14 +87,21 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
 
     try {
       // Registrar usuario con metadata del referral_code
+      // Preparar metadata - solo incluir referral_code si existe y es válido
+      const userMetadata: Record<string, any> = {
+        public_name: publicName || email.split('@')[0],
+      }
+      
+      // Solo agregar referral_code si existe y es válido
+      if (referralCode && referralCodeValid) {
+        userMetadata.referral_code = referralCode.toUpperCase().trim()
+      }
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            public_name: publicName || email.split('@')[0],
-            referral_code: referralCode ? referralCode.toUpperCase() : null,
-          },
+          data: userMetadata,
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       })

@@ -84,11 +84,12 @@ export async function getUserRole(userId: string): Promise<'admin' | 'user'> {
 
 /**
  * Obtener lista de afiliados directos de un usuario
+ * Ahora permite que cualquier usuario vea sus propios afiliados
  */
 export async function getUserAffiliates(userId: string) {
   const supabase = await createClient()
 
-  // Verificar que el usuario es admin
+  // Verificar autenticación
   const {
     data: { user: currentUser },
   } = await supabase.auth.getUser()
@@ -98,8 +99,11 @@ export async function getUserAffiliates(userId: string) {
   }
 
   const userRole = currentUser.user_metadata?.role || currentUser.app_metadata?.role
-  if (userRole !== 'admin') {
-    return { success: false, error: 'No autorizado. Solo administradores pueden ver afiliados.', data: null }
+  const isAdmin = userRole === 'admin'
+  
+  // Solo permitir ver afiliados propios o si es admin puede ver cualquier usuario
+  if (!isAdmin && currentUser.id !== userId) {
+    return { success: false, error: 'No autorizado. Solo puedes ver tus propios afiliados.', data: null }
   }
 
   try {

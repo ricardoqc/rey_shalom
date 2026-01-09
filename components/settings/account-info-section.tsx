@@ -21,7 +21,7 @@ export function AccountInfoSection({ user, profile }: AccountInfoSectionProps) {
 
   const getReferralLink = () => {
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}/register?ref=${profile?.referral_code}`
+      return `${window.location.origin}?ref=${profile?.referral_code}`
     }
     return ''
   }
@@ -140,9 +140,14 @@ export function AccountInfoSection({ user, profile }: AccountInfoSectionProps) {
             <div className="flex items-center gap-3">
               <User className="h-5 w-5 text-gray-400" />
               <div>
-                <p className="text-sm font-medium text-gray-500">Patrocinador</p>
+                <p className="text-sm font-medium text-gray-500">Patrocinador / Líder</p>
                 <p className="text-sm text-gray-900">
-                  Te uniste a través de un patrocinador
+                  {profile?.sponsor?.public_name || profile?.sponsor?.email || 'Patrocinador'}
+                  {profile?.sponsor?.referral_code && (
+                    <span className="text-xs text-gray-500 ml-2">
+                      ({profile.sponsor.referral_code})
+                    </span>
+                  )}
                 </p>
               </div>
             </div>

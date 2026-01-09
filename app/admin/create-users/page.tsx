@@ -1,293 +1,336 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { Loader2, UserPlus, Shield } from 'lucide-react'
+import { createUser } from '@/app/actions/admin'
+import { Loader2, UserPlus, Shield, Mail, Lock, User, Award, Users } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function CreateUsersPage() {
   const [loading, setLoading] = useState(false)
-  const [creating, setCreating] = useState<string | null>(null)
-  const supabase = createClient()
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    public_name: '',
+    referral_code: '',
+    role: 'user' as 'admin' | 'user',
+    status_level: 'BRONCE' as 'BRONCE' | 'PLATA' | 'ORO',
+    sponsor_code: '',
+  })
 
-  const createSuperAdmin = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
-    setCreating('admin')
+
     try {
-      const email = prompt('Ingresa el email para el Super Admin:')
-      const password = prompt('Ingresa la contraseña (mínimo 6 caracteres):')
-
-      if (!email || !password) {
-        toast.error('Email y contraseña son requeridos')
-        return
-      }
-
-      if (password.length < 6) {
-        toast.error('La contraseña debe tener al menos 6 caracteres')
-        return
-      }
-
-      // Crear usuario en Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            role: 'admin',
-            public_name: 'Super Admin',
-          },
-        },
+      const result = await createUser({
+        email: formData.email,
+        password: formData.password,
+        public_name: formData.public_name,
+        referral_code: formData.referral_code || undefined,
+        role: formData.role,
+        status_level: formData.status_level,
+        sponsor_code: formData.sponsor_code || undefined,
       })
 
-      if (authError) throw authError
-
-      if (!authData.user) {
-        throw new Error('No se pudo crear el usuario')
+      if (result.success) {
+        toast.success('Usuario creado exitosamente!', {
+          description: `Email: ${result.user?.email}`,
+        })
+        // Limpiar formulario
+        setFormData({
+          email: '',
+          password: '',
+          public_name: '',
+          referral_code: '',
+          role: 'user',
+          status_level: 'BRONCE',
+          sponsor_code: '',
+        })
+      } else {
+        toast.error('Error al crear usuario', {
+          description: result.error,
+        })
       }
-
-      // Actualizar metadata para asignar rol de admin
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: {
-          role: 'admin',
-        },
-      })
-
-      if (updateError) {
-        console.error('Error actualizando metadata:', updateError)
-      }
-
-      // El trigger handle_new_user() debería crear el perfil automáticamente
-      // Pero por si acaso, verificamos y creamos manualmente si es necesario
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authData.user.id)
-        .single()
-
-      if (profileError || !profile) {
-        // Crear perfil manualmente si no existe
-        const { error: createProfileError } = await supabase
-          .from('profiles')
-          // @ts-ignore - TypeScript inference issue with Supabase client types
-          .insert({
-            id: authData.user.id,
-            public_name: 'Super Admin',
-            referral_code: `ADMIN-${Date.now().toString(36).toUpperCase()}`,
-            status_level: 'ORO',
-            current_points: 9999,
-            is_active: true,
-          })
-
-        if (createProfileError) {
-          console.error('Error creando perfil:', createProfileError)
-        }
-      }
-
-      toast.success('Super Admin creado exitosamente!')
-      toast.info(
-        `Email: ${email}\nRevisa tu correo para confirmar la cuenta.`
-      )
     } catch (error: any) {
-      toast.error(`Error: ${error.message}`)
+      toast.error('Error inesperado', {
+        description: error.message || 'Ocurrió un error al crear el usuario',
+      })
     } finally {
       setLoading(false)
-      setCreating(null)
-    }
-  }
-
-  const createTestUser = async () => {
-    setLoading(true)
-    setCreating('user')
-    try {
-      const email = prompt('Ingresa el email para el usuario de prueba:')
-      const password = prompt('Ingresa la contraseña (mínimo 6 caracteres):')
-      const referralCode = prompt(
-        'Ingresa el código de referido (opcional, deja vacío si no hay):'
-      )
-
-      if (!email || !password) {
-        toast.error('Email y contraseña son requeridos')
-        return
-      }
-
-      if (password.length < 6) {
-        toast.error('La contraseña debe tener al menos 6 caracteres')
-        return
-      }
-
-      // Buscar sponsor si hay código de referido
-      let sponsorId = null
-      if (referralCode) {
-        const { data: sponsor } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('referral_code', referralCode.toUpperCase())
-          .single()
-
-        if (sponsor) {
-          sponsorId = (sponsor as any).id
-        } else {
-          toast.warning(
-            `Código de referido "${referralCode}" no encontrado. Creando usuario sin sponsor.`
-          )
-        }
-      }
-
-      // Crear usuario en Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            public_name: email.split('@')[0],
-            referral_code: referralCode || null,
-            sponsor_id: sponsorId,
-          },
-        },
-      })
-
-      if (authError) throw authError
-
-      if (!authData.user) {
-        throw new Error('No se pudo crear el usuario')
-      }
-
-      // El trigger handle_new_user() debería crear el perfil automáticamente
-      // Esperamos un momento y verificamos
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authData.user.id)
-        .single()
-
-      if (profileError || !profile) {
-        // Crear perfil manualmente si no existe
-        const { error: createProfileError } = await supabase
-          .from('profiles')
-          // @ts-ignore - TypeScript inference issue with Supabase client types
-          .insert({
-            id: authData.user.id,
-            public_name: email.split('@')[0],
-            referral_code: `${email.split('@')[0].toUpperCase()}-${Date.now().toString(36).toUpperCase()}`,
-            sponsor_id: sponsorId,
-            status_level: 'BRONCE',
-            current_points: 0,
-            is_active: true,
-          })
-
-        if (createProfileError) {
-          console.error('Error creando perfil:', createProfileError)
-        }
-      }
-
-      toast.success('Usuario de prueba creado exitosamente!')
-      toast.info(
-        `Email: ${email}\nRevisa tu correo para confirmar la cuenta.`
-      )
-    } catch (error: any) {
-      toast.error(`Error: ${error.message}`)
-    } finally {
-      setLoading(false)
-      setCreating(null)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Crear Usuarios
-            </h1>
-            <p className="mt-2 text-sm text-gray-600">
-              Utiliza estas herramientas para crear usuarios de prueba
-            </p>
-          </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Crear Nuevo Usuario</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Crea usuarios nuevos que serán agregados automáticamente a Supabase
+        </p>
+      </div>
 
-          <div className="space-y-6">
-            {/* Super Admin Card */}
-            <div className="border-2 border-blue-200 rounded-lg p-6 bg-blue-50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex-shrink-0">
-                  <Shield className="h-8 w-8 text-blue-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Super Admin
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    Crea un usuario con permisos de administrador
-                  </p>
+      <div className="bg-white shadow rounded-lg">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Información básica */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Información Básica
+            </h2>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="email"
+                    id="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="usuario@ejemplo.com"
+                  />
                 </div>
               </div>
-              <button
-                onClick={createSuperAdmin}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {creating === 'admin' ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Creando...
-                  </>
-                ) : (
-                  <>
-                    <Shield className="h-5 w-5" />
-                    Crear Super Admin
-                  </>
-                )}
-              </button>
-            </div>
 
-            {/* Test User Card */}
-            <div className="border-2 border-green-200 rounded-lg p-6 bg-green-50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex-shrink-0">
-                  <UserPlus className="h-8 w-8 text-green-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Usuario de Prueba
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    Crea un usuario normal para probar el sistema
-                  </p>
+              {/* Contraseña */}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Contraseña <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="password"
+                    id="password"
+                    required
+                    minLength={6}
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="Mínimo 6 caracteres"
+                  />
                 </div>
               </div>
-              <button
-                onClick={createTestUser}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            </div>
+
+            {/* Nombre público */}
+            <div>
+              <label
+                htmlFor="public_name"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
-                {creating === 'user' ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Creando...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="h-5 w-5" />
-                    Crear Usuario de Prueba
-                  </>
-                )}
-              </button>
+                Nombre Público <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  id="public_name"
+                  required
+                  value={formData.public_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, public_name: e.target.value })
+                  }
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Nombre completo"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-sm text-yellow-800">
-              <strong>Nota:</strong> Los usuarios creados recibirán un email de
-              confirmación. En desarrollo, puedes verificar el email directamente
-              desde el dashboard de Supabase o usar el enlace de confirmación que
-              aparece en la consola del servidor.
-            </p>
+          {/* Configuración de rol y nivel */}
+          <div className="space-y-4 border-t pt-6">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Configuración de Rol y Nivel
+            </h2>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* Rol */}
+              <div>
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Rol
+                </label>
+                <select
+                  id="role"
+                  value={formData.role}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      role: e.target.value as 'admin' | 'user',
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                >
+                  <option value="user">Usuario</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+
+              {/* Nivel de estado */}
+              <div>
+                <label
+                  htmlFor="status_level"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Nivel de Estado
+                </label>
+                <select
+                  id="status_level"
+                  value={formData.status_level}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      status_level: e.target.value as 'BRONCE' | 'PLATA' | 'ORO',
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                >
+                  <option value="BRONCE">Bronce</option>
+                  <option value="PLATA">Plata</option>
+                  <option value="ORO">Oro</option>
+                </select>
+              </div>
+            </div>
           </div>
-        </div>
+
+          {/* Referidos y código de referido */}
+          <div className="space-y-4 border-t pt-6">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Sistema de Referidos (Opcional)
+            </h2>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* Código de referido del sponsor */}
+              <div>
+                <label
+                  htmlFor="sponsor_code"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Código de Referido del Sponsor
+                </label>
+                <input
+                  type="text"
+                  id="sponsor_code"
+                  value={formData.sponsor_code}
+                  onChange={(e) =>
+                    setFormData({ ...formData, sponsor_code: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Código del sponsor (opcional)"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Si se proporciona, el usuario será vinculado a este sponsor
+                </p>
+              </div>
+
+              {/* Código de referido personalizado */}
+              <div>
+                <label
+                  htmlFor="referral_code"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Código de Referido Personalizado
+                </label>
+                <input
+                  type="text"
+                  id="referral_code"
+                  value={formData.referral_code}
+                  onChange={(e) =>
+                    setFormData({ ...formData, referral_code: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Se generará automáticamente si se deja vacío"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Si se deja vacío, se generará automáticamente
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Botones */}
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={() => {
+                setFormData({
+                  email: '',
+                  password: '',
+                  public_name: '',
+                  referral_code: '',
+                  role: 'user',
+                  status_level: 'BRONCE',
+                  sponsor_code: '',
+                })
+              }}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              disabled={loading}
+            >
+              Limpiar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Creando...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4" />
+                  Crear Usuario
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Información adicional */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h3 className="text-sm font-semibold text-blue-900 mb-2">
+          Información Importante
+        </h3>
+        <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+          <li>
+            Los usuarios creados serán agregados automáticamente a Supabase Auth
+            y a la tabla de perfiles
+          </li>
+          <li>El email será confirmado automáticamente</li>
+          <li>
+            Si no se proporciona un código de referido, se generará uno
+            automáticamente basado en el nombre
+          </li>
+          <li>
+            Si se proporciona un código de sponsor, el usuario será vinculado
+            al sistema MLM
+          </li>
+        </ul>
       </div>
     </div>
   )
 }
-

@@ -1,6 +1,8 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { Database } from '@/types/supabase'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
@@ -225,3 +227,206 @@ export async function addStock(
   }
 }
 
+// Schema de validación para crear usuarios
+const createUserSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  public_name: z.string().min(1, 'El nombre es requerido'),
+  referral_code: z.string().optional(),
+  role: z.enum(['admin', 'user']).default('user'),
+  status_level: z.enum(['BRONCE', 'PLATA', 'ORO']).default('BRONCE'),
+  sponsor_code: z.string().optional(),
+})
+
+export async function createUser(data: z.infer<typeof createUserSchema>) {
+  // Verificar que el usuario actual es admin
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autenticado' }
+  }
+
+  const userRole = user.user_metadata?.role || user.app_metadata?.role
+  if (userRole !== 'admin') {
+    return { success: false, error: 'No autorizado. Solo los administradores pueden crear usuarios.' }
+  }
+
+  // Obtener service role key para crear usuarios
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+
+  if (!serviceRoleKey || !supabaseUrl) {
+    return {
+      success: false,
+      error: 'Service Role Key no configurada. Configura SUPABASE_SERVICE_ROLE_KEY en .env.local',
+    }
+  }
+
+  // Crear cliente con Service Role (tiene permisos completos)
+  const supabaseAdmin = createServiceClient<Database>(
+    supabaseUrl,
+    serviceRoleKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  )
+
+  try {
+    // Validar datos
+    const validatedData = createUserSchema.parse(data)
+
+    // Verificar si el email ya existe
+    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
+    const existingUser = existingUsers?.users?.find(
+      (u) => u.email === validatedData.email
+    )
+
+    if (existingUser) {
+      return { success: false, error: 'El email ya está registrado' }
+    }
+
+    // Buscar sponsor si hay código de referido
+    let sponsorId = null
+    if (validatedData.sponsor_code) {
+      const { data: sponsor } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('referral_code', validatedData.sponsor_code.toUpperCase())
+        .eq('is_active', true)
+        .single()
+
+      if (sponsor) {
+        sponsorId = sponsor.id
+      } else {
+        return {
+          success: false,
+          error: `Código de referido "${validatedData.sponsor_code}" no encontrado`,
+        }
+      }
+    }
+
+    // Generar código de referido único si no se proporciona
+    let referralCode = validatedData.referral_code?.toUpperCase()
+    if (!referralCode) {
+      const namePrefix = validatedData.public_name
+        .substring(0, 6)
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '')
+      const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase()
+      referralCode = `${namePrefix}-${randomSuffix}`
+    }
+
+    // Verificar que el código de referido sea único
+    const { data: existingCode } = await supabaseAdmin
+      .from('profiles')
+      .select('id')
+      .eq('referral_code', referralCode)
+      .single()
+
+    if (existingCode) {
+      // Si el código existe, generar uno nuevo
+      referralCode = `${validatedData.public_name.substring(0, 6).toUpperCase().replace(/[^A-Z0-9]/g, '')}-${Date.now().toString(36).toUpperCase()}`
+    }
+
+    // Crear usuario en Supabase Auth
+    const { data: newUser, error: authError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: validatedData.email,
+        password: validatedData.password,
+        email_confirm: true, // Confirmar email automáticamente
+        user_metadata: {
+          role: validatedData.role,
+          public_name: validatedData.public_name,
+        },
+        app_metadata: {
+          role: validatedData.role,
+        },
+      })
+
+    if (authError) {
+      return { success: false, error: `Error al crear usuario: ${authError.message}` }
+    }
+
+    if (!newUser.user) {
+      return { success: false, error: 'No se pudo crear el usuario' }
+    }
+
+    const userId = newUser.user.id
+
+    // Esperar un momento para que el trigger se ejecute (si existe)
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    // Verificar si el perfil fue creado por el trigger
+    const { data: existingProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (!existingProfile) {
+      // Crear perfil manualmente si el trigger no lo hizo
+      const { error: profileError } = await supabaseAdmin
+        .from('profiles')
+        // @ts-ignore - TypeScript inference issue with profiles table
+        .insert({
+          id: userId,
+          public_name: validatedData.public_name,
+          referral_code: referralCode,
+          sponsor_id: sponsorId,
+          status_level: validatedData.status_level,
+          current_points: 0,
+          total_points_earned: 0,
+          is_active: true,
+        })
+
+      if (profileError) {
+        // Si falla crear el perfil, intentar eliminar el usuario de auth
+        await supabaseAdmin.auth.admin.deleteUser(userId)
+        return {
+          success: false,
+          error: `Error al crear perfil: ${profileError.message}`,
+        }
+      }
+    } else {
+      // Actualizar perfil existente con los datos proporcionados
+      const { error: updateError } = await supabaseAdmin
+        .from('profiles')
+        // @ts-ignore - TypeScript inference issue with profiles table
+        .update({
+          public_name: validatedData.public_name,
+          referral_code: referralCode,
+          sponsor_id: sponsorId || existingProfile.sponsor_id,
+          status_level: validatedData.status_level,
+        })
+        .eq('id', userId)
+
+      if (updateError) {
+        console.error('Error actualizando perfil:', updateError)
+      }
+    }
+
+    revalidatePath('/admin/users')
+    revalidatePath('/admin/create-users')
+
+    return {
+      success: true,
+      user: {
+        id: userId,
+        email: validatedData.email,
+        public_name: validatedData.public_name,
+        referral_code: referralCode,
+      },
+    }
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.issues[0]?.message || 'Error de validación' }
+    }
+    return { success: false, error: error.message || 'Error al crear usuario' }
+  }
+}

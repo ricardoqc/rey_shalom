@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   X,
   Menu,
+  UserPlus,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -22,6 +23,7 @@ const navigation = [
   { name: 'Inventario', href: '/admin/inventory', icon: Warehouse },
   { name: 'Sucursales', href: '/admin/warehouses', icon: Building2 },
   { name: 'Usuarios/Afiliados', href: '/admin/users', icon: Users },
+  { name: 'Crear Usuario', href: '/admin/create-users', icon: UserPlus },
 ]
 
 export function AdminSidebar() {

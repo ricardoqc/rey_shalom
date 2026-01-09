@@ -84,9 +84,17 @@ export function useImageUpload(): UseImageUploadReturn {
           .from(bucket)
           .createSignedUrl(filePath, 31536000) // 1 año de validez
 
-        if (signedError || !signedData) {
-          throw new Error('Error al generar URL del archivo')
+        if (signedError) {
+          console.error('Error al generar URL firmada:', signedError)
+          throw new Error(
+            `Error al generar URL del archivo: ${signedError.message || 'Verifica las políticas RLS del bucket'}`
+          )
         }
+        
+        if (!signedData || !signedData.signedUrl) {
+          throw new Error('No se pudo generar la URL firmada del archivo')
+        }
+        
         fileUrl = signedData.signedUrl
       } else {
         // Para buckets públicos, usar URL pública

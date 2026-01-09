@@ -496,6 +496,20 @@ export async function getSettingsData() {
     .eq('id', user.id)
     .single()
 
+  // Si tiene sponsor, obtener información del sponsor
+  let sponsorInfo = null
+  if (profile?.sponsor_id) {
+    const { data: sponsor } = await supabase
+      .from('profiles')
+      .select('id, public_name, referral_code')
+      .eq('id', profile.sponsor_id)
+      .single()
+    
+    if (sponsor) {
+      sponsorInfo = sponsor
+    }
+  }
+
   // Obtener métodos de pago
   const { data: paymentMethods } = await supabase
     .from('user_payment_methods')
@@ -522,7 +536,7 @@ export async function getSettingsData() {
 
   return {
     user,
-    profile,
+    profile: profile ? { ...profile, sponsor: sponsorInfo } : null,
     paymentMethods: paymentMethods || [],
     socialLinks: socialLinks || [],
     store,
