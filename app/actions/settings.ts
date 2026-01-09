@@ -498,11 +498,12 @@ export async function getSettingsData() {
 
   // Si tiene sponsor, obtener información del sponsor
   let sponsorInfo = null
-  if (profile?.sponsor_id) {
+  const profileWithSponsor = profile as { sponsor_id: string | null } | null
+  if (profileWithSponsor?.sponsor_id) {
     const { data: sponsor } = await supabase
       .from('profiles')
       .select('id, public_name, referral_code')
-      .eq('id', profile.sponsor_id)
+      .eq('id', profileWithSponsor.sponsor_id)
       .single()
     
     if (sponsor) {
@@ -536,7 +537,7 @@ export async function getSettingsData() {
 
   return {
     user,
-    profile: profile ? { ...profile, sponsor: sponsorInfo } : null,
+    profile: profile ? { ...(profile as Record<string, any>), sponsor: sponsorInfo } : null,
     paymentMethods: paymentMethods || [],
     socialLinks: socialLinks || [],
     store,

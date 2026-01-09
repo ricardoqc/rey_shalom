@@ -294,21 +294,21 @@ export async function createUser(data: z.infer<typeof createUserSchema>) {
     // Buscar sponsor si hay código de referido
     let sponsorId = null
     if (validatedData.sponsor_code) {
-      const { data: sponsor } = await supabaseAdmin
+      const { data: sponsor, error: sponsorError } = await supabaseAdmin
         .from('profiles')
         .select('id')
         .eq('referral_code', validatedData.sponsor_code.toUpperCase())
         .eq('is_active', true)
         .single()
 
-      if (sponsor) {
-        sponsorId = sponsor.id
-      } else {
+      if (sponsorError || !sponsor) {
         return {
           success: false,
           error: `Código de referido "${validatedData.sponsor_code}" no encontrado`,
         }
       }
+
+      sponsorId = (sponsor as { id: string }).id
     }
 
     // Generar código de referido único si no se proporciona
@@ -401,7 +401,7 @@ export async function createUser(data: z.infer<typeof createUserSchema>) {
         .update({
           public_name: validatedData.public_name,
           referral_code: referralCode,
-          sponsor_id: sponsorId || existingProfile.sponsor_id,
+          sponsor_id: sponsorId || (existingProfile as { sponsor_id: string | null }).sponsor_id,
           status_level: validatedData.status_level,
         })
         .eq('id', userId)
