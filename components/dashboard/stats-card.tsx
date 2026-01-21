@@ -15,11 +15,11 @@ export function StatsCard({
   title,
   value,
   icon: Icon,
-  iconColor = 'text-blue-600',
+  iconColor = 'text-[#ea2a33]',
   trend,
 }: StatsCardProps) {
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow">
+    <div className="overflow-hidden rounded-xl bg-white/5 border border-white/10 shadow-lg backdrop-blur-sm">
       <div className="p-5">
         <div className="flex items-center">
           <div className="flex-shrink-0">
@@ -27,17 +27,17 @@ export function StatsCard({
           </div>
           <div className="ml-5 w-0 flex-1">
             <dl>
-              <dt className="truncate text-sm font-medium text-gray-500">
+              <dt className="truncate text-sm font-medium text-white/60">
                 {title}
               </dt>
               <dd className="flex items-baseline">
-                <div className="text-2xl font-semibold text-gray-900">
+                <div className="text-2xl font-semibold text-white">
                   {typeof value === 'number' ? value.toLocaleString() : value}
                 </div>
                 {trend && (
                   <div
                     className={`ml-2 flex items-baseline text-sm font-semibold ${
-                      trend.isPositive ? 'text-green-600' : 'text-red-600'
+                      trend.isPositive ? 'text-[#4CAF50]' : 'text-[#ea2a33]'
                     }`}
                   >
                     {trend.isPositive ? '↑' : '↓'} {trend.value}
@@ -51,4 +51,3 @@ export function StatsCard({
     </div>
   )
 }
-

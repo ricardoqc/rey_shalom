@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { User, LogOut, Menu, X, ShoppingBag } from 'lucide-react'
+import { User, LogOut, Menu, X } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { CartIcon } from '@/components/shop/cart-icon'
 
@@ -14,10 +14,10 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
   const supabase = createClient()
 
   useEffect(() => {
-    // Obtener usuario actual
     const getUser = async () => {
       const {
         data: { user },
@@ -28,14 +28,12 @@ export function Navbar() {
 
     getUser()
 
-    // Escuchar cambios de autenticación
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
 
-    // Obtener código de sponsor de la cookie
     const getCookie = (name: string) => {
       const value = `; ${document.cookie}`
       const parts = value.split(`; ${name}=`)
@@ -55,11 +53,17 @@ export function Navbar() {
     router.refresh()
   }
 
+  const menuItems = [
+    { href: '/', label: 'Inicio' },
+    { href: '/shop', label: 'Productos' },
+    { href: '/#negocio', label: 'Negocio' },
+    { href: '/#testimonios', label: 'Testimonios' },
+  ]
+
   // Estado A: Visitante con cookie de sponsor
   if (!user && sponsorCode) {
     return (
       <>
-        {/* Barra superior de aviso */}
         <div className="bg-blue-600 text-white py-2 px-4 text-sm text-center">
           <span>
             Estás comprando con la asesoría de:{' '}
@@ -67,73 +71,95 @@ export function Navbar() {
           </span>
         </div>
 
-        {/* Navbar principal */}
-        <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center">
-                <Link href="/" className="flex items-center space-x-2">
-                  <ShoppingBag className="h-6 w-6 text-blue-600" />
-                  <span className="text-xl font-bold text-gray-900">
-                    Rey Shalom
-                  </span>
-                </Link>
+        <header className="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-white/10">
+          <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="size-8 text-[#ea2a33]">
+                <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
+                </svg>
               </div>
-
-              {/* Desktop menu */}
-              <div className="hidden md:flex items-center space-x-4">
+              <h1 className="text-xl font-black tracking-tighter uppercase italic">Rey Shalom</h1>
+            </div>
+            
+            <nav className="hidden md:flex items-center gap-10">
+              {menuItems.map((item) => (
                 <Link
-                  href="/auth/login"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  key={item.href}
+                  href={item.href}
+                  className={`text-sm font-medium transition-colors ${
+                    pathname === item.href
+                      ? 'text-[#FFD700]'
+                      : 'hover:text-[#FFD700]'
+                  }`}
                 >
-                  Iniciar Sesión
+                  {item.label}
                 </Link>
-                <Link
-                  href="/auth/signup"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
-                >
-                  Registrarse
-                </Link>
-              </div>
+              ))}
+            </nav>
+            
+            <div className="hidden md:flex items-center gap-3">
+              <CartIcon />
+              <Link
+                href="/auth/login"
+                className="px-6 py-2 rounded-full text-sm font-bold bg-white/5 hover:bg-white/10 transition-all border border-white/10"
+              >
+                Ingresar
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="px-6 py-2 rounded-full text-sm font-bold bg-[#FFD700] text-black hover:bg-yellow-400 transition-all shadow-lg"
+              >
+                Únete Ahora
+              </Link>
+            </div>
 
-              {/* Mobile menu button */}
-              <div className="md:hidden">
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="text-gray-700 hover:text-gray-900"
-                >
-                  {mobileMenuOpen ? (
-                    <X className="h-6 w-6" />
-                  ) : (
-                    <Menu className="h-6 w-6" />
-                  )}
-                </button>
-              </div>
+            <div className="md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white"
+              >
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </div>
           </div>
 
-          {/* Mobile menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                <Link
-                  href="/auth/login"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Iniciar Sesión
-                </Link>
-                <Link
-                  href="/auth/signup"
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white hover:bg-blue-700"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Registrarse
-                </Link>
+            <div className="md:hidden border-t border-white/10 bg-[#121212]/95 backdrop-blur-md">
+              <div className="px-4 py-4 space-y-3">
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700]"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <div className="pt-4 border-t border-white/10 space-y-3">
+                  <div className="px-3 py-2">
+                    <CartIcon />
+                  </div>
+                  <Link
+                    href="/auth/login"
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-white/5 text-white hover:bg-white/10 text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Ingresar
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-[#FFD700] text-black hover:bg-yellow-400 text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Únete Ahora
+                  </Link>
+                </div>
               </div>
             </div>
           )}
-        </nav>
+        </header>
       </>
     )
   }
@@ -141,183 +167,198 @@ export function Navbar() {
   // Estado B: Usuario logueado
   if (user) {
     return (
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2">
-                <ShoppingBag className="h-6 w-6 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">
-                  Rey Shalom
-                </span>
-              </Link>
+      <header className="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-white/10">
+        <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="size-8 text-[#ea2a33]">
+              <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
+              </svg>
             </div>
-
-            {/* Desktop menu */}
-            <div className="hidden md:flex items-center space-x-4">
+            <Link href="/">
+              <h1 className="text-xl font-black tracking-tighter uppercase italic">Rey Shalom</h1>
+            </Link>
+          </div>
+          
+          <nav className="hidden md:flex items-center gap-10">
+            {menuItems.map((item) => (
               <Link
-                href="/shop"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                key={item.href}
+                href={item.href}
+                className={`text-sm font-medium transition-colors ${
+                  pathname === item.href
+                    ? 'text-[#FFD700]'
+                    : 'hover:text-[#FFD700]'
+                }`}
               >
-                Tienda
+                {item.label}
               </Link>
-              <CartIcon />
-              <Link
-                href="/dashboard"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2"
-              >
-                <User className="h-4 w-4" />
-                <span>Mi Oficina Virtual</span>
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Cerrar Sesión</span>
-              </button>
-            </div>
+            ))}
+          </nav>
+          
+          <div className="hidden md:flex items-center gap-3">
+            <CartIcon />
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium hover:text-[#FFD700] transition-colors flex items-center gap-2"
+            >
+              <User className="h-4 w-4" />
+              <span>Mi Oficina</span>
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="text-sm font-medium hover:text-[#FFD700] transition-colors flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Cerrar Sesión</span>
+            </button>
+          </div>
 
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-700 hover:text-gray-900"
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <Menu className="h-6 w-6" />
-                )}
-              </button>
-            </div>
+          <div className="md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-white"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
 
-          {/* Mobile menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200">
-              <div className="px-2 pt-2 pb-3 space-y-1">
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-white/10 bg-[#121212]/95 backdrop-blur-md">
+            <div className="px-4 py-4 space-y-3">
+              {menuItems.map((item) => (
                 <Link
-                  href="/shop"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                  key={item.href}
+                  href={item.href}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700]"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Tienda
+                  {item.label}
                 </Link>
+              ))}
+              <div className="pt-4 border-t border-white/10 space-y-3">
                 <div className="px-3 py-2">
                   <CartIcon />
                 </div>
                 <Link
                   href="/dashboard"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 flex items-center space-x-2"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700] flex items-center gap-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <User className="h-4 w-4" />
-                  <span>Mi Oficina Virtual</span>
+                  <span>Mi Oficina</span>
                 </Link>
                 <button
                   onClick={() => {
                     handleSignOut()
                     setMobileMenuOpen(false)
                   }}
-                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 flex items-center space-x-2"
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700] flex items-center gap-2"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Cerrar Sesión</span>
                 </button>
               </div>
             </div>
-          )}
-      </nav>
+          </div>
+        )}
+      </header>
     )
   }
 
-  // Estado C: Visitante limpio (sin cookie, sin usuario)
+  // Estado C: Visitante limpio
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <ShoppingBag className="h-6 w-6 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">
-                Rey Shalom
-              </span>
-            </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-white/10">
+      <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="size-8 text-[#ea2a33]">
+            <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
+            </svg>
           </div>
+          <Link href="/">
+            <h1 className="text-xl font-black tracking-tighter uppercase italic">Rey Shalom</h1>
+          </Link>
+        </div>
+        
+        <nav className="hidden md:flex items-center gap-10">
+          {menuItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`text-sm font-medium transition-colors ${
+                pathname === item.href
+                  ? 'text-[#FFD700]'
+                  : 'hover:text-[#FFD700]'
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        
+        <div className="hidden md:flex items-center gap-3">
+          <CartIcon />
+          <Link
+            href="/auth/login"
+            className="px-6 py-2 rounded-full text-sm font-bold bg-white/5 hover:bg-white/10 transition-all border border-white/10"
+          >
+            Ingresar
+          </Link>
+          <Link
+            href="/auth/signup"
+            className="px-6 py-2 rounded-full text-sm font-bold bg-[#FFD700] text-black hover:bg-yellow-400 transition-all shadow-lg"
+          >
+            Únete Ahora
+          </Link>
+        </div>
 
-          {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/shop"
-              className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Tienda
-            </Link>
-            <CartIcon />
-            <Link
-              href="/auth/login"
-              className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Iniciar Sesión
-            </Link>
-            <Link
-              href="/auth/signup"
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
-            >
-              Registrarse
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-700 hover:text-gray-900"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          </div>
+        <div className="md:hidden">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="text-white"
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link
-              href="/shop"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Tienda
-            </Link>
-            <div className="px-3 py-2">
-              <CartIcon />
+        <div className="md:hidden border-t border-white/10 bg-[#121212]/95 backdrop-blur-md">
+          <div className="px-4 py-4 space-y-3">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <div className="pt-4 border-t border-white/10 space-y-3">
+              <div className="px-3 py-2">
+                <CartIcon />
+              </div>
+              <Link
+                href="/auth/login"
+                className="block px-3 py-2 rounded-md text-base font-medium bg-white/5 text-white hover:bg-white/10 text-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Ingresar
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="block px-3 py-2 rounded-md text-base font-medium bg-[#FFD700] text-black hover:bg-yellow-400 text-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Únete Ahora
+              </Link>
             </div>
-            <Link
-              href="/auth/login"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Iniciar Sesión
-            </Link>
-            <Link
-              href="/auth/signup"
-              className="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white hover:bg-blue-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Registrarse
-            </Link>
           </div>
         </div>
       )}
-    </nav>
+    </header>
   )
 }
-

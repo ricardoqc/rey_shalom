@@ -52,37 +52,44 @@ export function ProductCard({
   }
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 shadow-lg transition-all hover:shadow-xl hover:border-white/20 backdrop-blur-sm">
       {/* Badge de descuento */}
       {discountPercentage > 0 && (
-        <div className="absolute right-2 top-2 z-10 rounded-full bg-red-500 px-2 py-1 text-xs font-semibold text-white">
+        <div className="absolute right-2 top-2 z-10 rounded-full bg-[#ea2a33] px-2 py-1 text-xs font-semibold text-white">
           -{discountPercentage}%
         </div>
       )}
 
+      {/* Badge de PV */}
+      {product.points_per_unit > 0 && (
+        <div className="absolute left-2 top-2 z-10 rounded-full bg-[#FFD700] text-black px-2 py-1 text-xs font-bold">
+          {product.points_per_unit} PV
+        </div>
+      )}
+
       {/* Imagen del producto */}
-      <div className="aspect-square w-full overflow-hidden bg-gray-100">
+      <div className="aspect-square w-full overflow-hidden bg-white/5">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform group-hover:scale-110"
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <span className="text-4xl text-gray-400">📦</span>
+            <span className="text-4xl text-white/40">📦</span>
           </div>
         )}
       </div>
 
       {/* Contenido */}
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+        <h3 className="text-lg font-semibold text-white line-clamp-2">
           {product.name}
         </h3>
 
         {product.description && (
-          <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+          <p className="mt-2 text-sm text-white/60 line-clamp-2">
             {product.description}
           </p>
         )}
@@ -92,25 +99,25 @@ export function ProductCard({
           {discountPercentage > 0 ? (
             <>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-sm text-white/50 line-through">
                   ${product.base_price.toLocaleString('es-PE', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </span>
-                <span className="text-lg font-bold text-red-600">
+                <span className="text-lg font-bold text-[#ea2a33]">
                   ${finalPrice.toLocaleString('es-PE', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </span>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-white/50">
                 Precio especial para {userRank}
               </p>
             </>
           ) : (
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-lg font-bold text-white">
               ${finalPrice.toLocaleString('es-PE', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -119,29 +126,19 @@ export function ProductCard({
           )}
         </div>
 
-        {/* Puntos */}
-        {product.points_per_unit > 0 && (
-          <div className="mt-2 flex items-center gap-1 text-sm text-blue-600">
-            <Award className="h-4 w-4" />
-            <span>
-              {product.points_per_unit} punto{product.points_per_unit !== 1 ? 's' : ''} por unidad
-            </span>
-          </div>
-        )}
-
         {/* Stock */}
         {inventory && (
           <div className="mt-2">
             {isOutOfStock ? (
-              <span className="text-sm font-medium text-red-600">
+              <span className="text-sm font-medium text-[#ea2a33]">
                 Sin stock
               </span>
             ) : isLowStock ? (
-              <span className="text-sm font-medium text-orange-600">
+              <span className="text-sm font-medium text-[#FFD700]">
                 Últimas {inventory.quantity} unidades
               </span>
             ) : (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-white/50">
                 En stock
               </span>
             )}
@@ -152,7 +149,7 @@ export function ProductCard({
         <button
           onClick={handleAddToCart}
           disabled={isOutOfStock}
-          className="mt-4 flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 flex items-center justify-center gap-2 rounded-md bg-[#ea2a33] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#d11a23] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ShoppingCart className="h-4 w-4" />
           {isOutOfStock ? 'Sin stock' : 'Agregar al carrito'}
@@ -161,4 +158,3 @@ export function ProductCard({
     </div>
   )
 }
-

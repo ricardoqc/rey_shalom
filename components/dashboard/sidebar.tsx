@@ -18,7 +18,7 @@ const navigation = [
   { name: 'Resumen', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Mi Equipo', href: '/dashboard/network', icon: Users },
   { name: 'Billetera', href: '/dashboard/wallet', icon: Wallet },
-  { name: 'Tienda', href: '/', icon: Store },
+  { name: 'Tienda', href: '/shop', icon: Store },
   { name: 'Configuración', href: '/dashboard/settings', icon: Settings },
 ]
 
@@ -32,7 +32,7 @@ export function DashboardSidebar() {
       <div className="lg:hidden fixed top-0 left-0 z-50 p-4">
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+          className="rounded-md bg-white/10 backdrop-blur-md p-2 text-white hover:bg-white/20 transition-colors border border-white/10"
         >
           {mobileMenuOpen ? (
             <X className="h-6 w-6" />
@@ -45,7 +45,7 @@ export function DashboardSidebar() {
       {/* Mobile sidebar overlay */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-gray-600 bg-opacity-75"
+          className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -53,14 +53,23 @@ export function DashboardSidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 w-64 bg-[#121212] border-r border-white/10 transform transition-transform duration-300 ease-in-out lg:translate-x-0',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="flex h-16 shrink-0 items-center border-b border-gray-200 px-6">
-            <h1 className="text-xl font-bold text-gray-900">Rey Shalom</h1>
+          <div className="flex h-16 shrink-0 items-center border-b border-white/10 px-6">
+            <div className="flex items-center gap-3">
+              <div className="size-6 text-[#ea2a33]">
+                <svg fill="currentColor" viewBox="0 0 48 48">
+                  <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
+                </svg>
+              </div>
+              <h1 className="text-xl font-black tracking-tighter uppercase italic text-white">
+                Rey Shalom
+              </h1>
+            </div>
           </div>
 
           {/* Navigation */}
@@ -75,14 +84,14 @@ export function DashboardSidebar() {
                   className={cn(
                     'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-[#ea2a33]/20 text-[#ea2a33] border border-[#ea2a33]/30'
+                      : 'text-white/60 hover:bg-white/5 hover:text-white'
                   )}
                 >
                   <item.icon
                     className={cn(
                       'h-5 w-5 shrink-0',
-                      isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'
+                      isActive ? 'text-[#ea2a33]' : 'text-white/40 group-hover:text-white/60'
                     )}
                   />
                   {item.name}
@@ -95,4 +104,3 @@ export function DashboardSidebar() {
     </>
   )
 }
-

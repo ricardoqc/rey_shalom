@@ -40,7 +40,7 @@ export function ReferralLink({ referralCode }: ReferralLinkProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+    <div className="overflow-hidden rounded-xl bg-gradient-to-br from-[#ea2a33] to-[#d11a23] shadow-lg">
       <div className="p-6 text-white">
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-1">
@@ -53,7 +53,7 @@ export function ReferralLink({ referralCode }: ReferralLinkProps) {
 
         {/* Input con código */}
         <div className="mb-4">
-          <div className="flex rounded-lg bg-white/10 backdrop-blur-sm">
+          <div className="flex rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
             <input
               type="text"
               readOnly
@@ -83,7 +83,7 @@ export function ReferralLink({ referralCode }: ReferralLinkProps) {
         <div className="flex gap-2">
           <button
             onClick={shareWhatsApp}
-            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-sm font-medium hover:bg-green-600 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-[#4CAF50] px-4 py-2 text-sm font-medium hover:bg-[#45a049] transition-colors"
           >
             <MessageCircle className="h-4 w-4" />
             WhatsApp
@@ -106,4 +106,3 @@ export function ReferralLink({ referralCode }: ReferralLinkProps) {
     </div>
   )
 }
-

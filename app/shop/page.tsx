@@ -47,12 +47,12 @@ export default async function ShopPage({
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#121212]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tienda</h1>
-          <p className="mt-2 text-sm text-gray-600">
+          <h1 className="text-3xl font-bold text-white">Tienda</h1>
+          <p className="mt-2 text-sm text-white/60">
             {userRank
               ? `Bienvenido, disfruta de precios especiales para ${userRank}`
               : 'Explora nuestros productos'}
@@ -66,8 +66,8 @@ export default async function ShopPage({
               href="/shop"
               className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 !params.category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-[#ea2a33] text-white'
+                  : 'bg-white/5 text-white/80 hover:bg-white/10 border border-white/10'
               }`}
             >
               <Filter className="h-4 w-4" />
@@ -79,8 +79,8 @@ export default async function ShopPage({
               href={`/shop?category=${encodeURIComponent(category)}`}
               className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 params.category === category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-[#ea2a33] text-white'
+                  : 'bg-white/5 text-white/80 hover:bg-white/10 border border-white/10'
               }`}
             >
               {category}
@@ -91,8 +91,8 @@ export default async function ShopPage({
 
         {/* Grid de productos */}
         {productsWithInventory.length === 0 ? (
-          <div className="rounded-lg bg-white p-12 text-center shadow">
-            <p className="text-gray-500">No hay productos disponibles</p>
+          <div className="rounded-xl bg-white/5 border border-white/10 p-12 text-center backdrop-blur-sm">
+            <p className="text-white/60">No hay productos disponibles</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -111,4 +111,3 @@ export default async function ShopPage({
     </div>
   )
 }
-

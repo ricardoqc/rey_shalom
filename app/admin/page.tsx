@@ -32,8 +32,8 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard General</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-white">Dashboard General</h1>
+        <p className="mt-1 text-sm text-white/60">
           Resumen del sistema
         </p>
       </div>
@@ -43,19 +43,19 @@ export default async function AdminDashboardPage() {
           title="Productos Activos"
           value={totalProducts || 0}
           icon={Package}
-          iconColor="text-blue-600"
+          iconColor="text-[#ea2a33]"
         />
         <StatsCard
           title="Usuarios Activos"
           value={totalUsers || 0}
           icon={Users}
-          iconColor="text-green-600"
+          iconColor="text-[#4CAF50]"
         />
         <StatsCard
           title="Sucursales"
           value={totalWarehouses || 0}
           icon={Warehouse}
-          iconColor="text-purple-600"
+          iconColor="text-[#FFD700]"
         />
         <StatsCard
           title="Ingresos Totales"
@@ -64,10 +64,9 @@ export default async function AdminDashboardPage() {
             maximumFractionDigits: 2,
           })}`}
           icon={DollarSign}
-          iconColor="text-yellow-600"
+          iconColor="text-[#FFD700]"
         />
       </div>
     </div>
   )
 }
-

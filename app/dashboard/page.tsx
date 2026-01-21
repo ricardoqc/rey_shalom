@@ -32,15 +32,15 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Resumen</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-white">Resumen</h1>
+          <p className="mt-1 text-sm text-white/60">
             Bienvenido a tu oficina virtual
           </p>
         </div>
         {isAdmin && (
           <Link
             href="/admin"
-            className="inline-flex items-center gap-2 rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-purple-700 transition-colors"
+            className="inline-flex items-center gap-2 rounded-md bg-[#ea2a33] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#d11a23] transition-colors"
           >
             <Shield className="h-5 w-5" />
             Panel de Administración
@@ -51,22 +51,22 @@ export default async function DashboardPage() {
       {/* KPI Cards - Primera fila */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Card combinada de Balance y Ganancias */}
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <div className={`rounded-md bg-green-100 p-3`}>
-              <Wallet className="h-6 w-6 text-green-600" />
+            <div className={`rounded-md bg-[#4CAF50]/20 p-3`}>
+              <Wallet className="h-6 w-6 text-[#4CAF50]" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-500">Balance y Ganancias</p>
-              <p className="mt-1 text-3xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-white/60">Balance y Ganancias</p>
+              <p className="mt-1 text-3xl font-bold text-white">
                 ${stats.currentBalance.toLocaleString('es-PE', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
               </p>
               <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500">
-                  <span className="font-medium text-gray-700">
+                <p className="text-xs text-white/50">
+                  <span className="font-medium text-white/80">
                     ${stats.monthlyEarnings.toLocaleString('es-PE', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -74,8 +74,8 @@ export default async function DashboardPage() {
                   </span>{' '}
                   ganancias del mes
                 </p>
-                <p className="text-xs text-gray-500">
-                  <span className="font-medium text-gray-700">
+                <p className="text-xs text-white/50">
+                  <span className="font-medium text-white/80">
                     ${stats.referralsEarnings.toLocaleString('es-PE', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -88,18 +88,18 @@ export default async function DashboardPage() {
           </div>
         </div>
         {/* Card combinada de Puntos */}
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <div className={`rounded-md bg-yellow-100 p-3`}>
-              <Star className="h-6 w-6 text-yellow-600" />
+            <div className={`rounded-md bg-[#FFD700]/20 p-3`}>
+              <Star className="h-6 w-6 text-[#FFD700]" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-500">Puntos</p>
-              <p className="mt-1 text-3xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-white/60">Puntos</p>
+              <p className="mt-1 text-3xl font-bold text-white">
                 {(stats.profile as any).total_points_earned || 0}
               </p>
-              <p className="mt-1 text-xs text-gray-500">
-                <span className="font-medium text-gray-700">{stats.pointsThisMonth}</span> puntos este mes
+              <p className="mt-1 text-xs text-white/50">
+                <span className="font-medium text-white/80">{stats.pointsThisMonth}</span> puntos este mes
               </p>
             </div>
           </div>
@@ -108,31 +108,31 @@ export default async function DashboardPage() {
           title="Rango Actual"
           value={(stats.profile as any).status_level || 'BRONCE'}
           icon={Award}
-          iconColor="text-purple-600"
+          iconColor="text-[#FFD700]"
         />
         <StatsCard
           title="Afiliados Directos"
           value={stats.directAffiliates}
           icon={Users}
-          iconColor="text-blue-600"
+          iconColor="text-[#4CAF50]"
         />
       </div>
 
       {/* KPI Cards - Segunda fila */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <Link href={`/store/${(stats.profile as any).referral_code}`} target="_blank">
-          <div className="rounded-lg bg-white p-6 shadow hover:shadow-md transition-shadow cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500">
+          <div className="rounded-xl bg-white/5 border-2 border-dashed border-white/20 p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:border-[#ea2a33]/50 backdrop-blur-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Mi Tienda</p>
-                <p className="mt-2 text-2xl font-semibold text-gray-900">Personalizada</p>
+                <p className="text-sm font-medium text-white/60">Mi Tienda</p>
+                <p className="mt-2 text-2xl font-semibold text-white">Personalizada</p>
               </div>
-              <div className="flex items-center gap-2 text-blue-600">
+              <div className="flex items-center gap-2 text-[#ea2a33]">
                 <Store className="h-8 w-8" />
                 <ExternalLink className="h-4 w-4" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">Ver mi tienda personalizada</p>
+            <p className="mt-2 text-xs text-white/50">Ver mi tienda personalizada</p>
           </div>
         </Link>
       </div>

@@ -98,44 +98,44 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">Pendiente</Badge>
+        return <Badge className="bg-[#FFD700]/20 text-[#FFD700] border border-[#FFD700]/30">Pendiente</Badge>
       case 'approved':
-        return <Badge className="bg-green-100 text-green-800">Aprobado</Badge>
+        return <Badge className="bg-[#4CAF50]/20 text-[#4CAF50] border border-[#4CAF50]/30">Aprobado</Badge>
       case 'rejected':
-        return <Badge className="bg-red-100 text-red-800">Rechazado</Badge>
+        return <Badge className="bg-[#ea2a33]/20 text-[#ea2a33] border border-[#ea2a33]/30">Rechazado</Badge>
       default:
-        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>
+        return <Badge className="bg-white/10 text-white/60 border border-white/10">{status}</Badge>
     }
   }
 
   const getRankBadgeColor = (rank: string) => {
     switch (rank) {
       case 'ORO':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-[#FFD700]/20 text-[#FFD700] border border-[#FFD700]/30'
       case 'PLATA':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-white/10 text-white/60 border border-white/10'
       case 'BRONCE':
-        return 'bg-orange-100 text-orange-800'
+        return 'bg-[#ea2a33]/20 text-[#ea2a33] border border-[#ea2a33]/30'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-white/10 text-white/60 border border-white/10'
     }
   }
 
   return (
     <>
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-white/5 border border-white/10 shadow-lg rounded-xl overflow-hidden backdrop-blur-sm">
         {/* Header con búsqueda y filtros */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-white/10">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Búsqueda */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/40" />
               <input
                 type="text"
                 placeholder="Buscar por número de orden, nombre o código..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/40 focus:ring-[#ea2a33] focus:border-[#ea2a33] focus:outline-none"
               />
             </div>
 
@@ -144,7 +144,7 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:ring-[#ea2a33] focus:border-[#ea2a33] focus:outline-none"
               >
                 <option value="pending">Pendientes</option>
                 <option value="approved">Aprobados</option>
@@ -158,11 +158,11 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
         {/* Tabla */}
         {filteredOrders.length === 0 ? (
           <div className="p-12 text-center">
-            <Clock className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">
+            <Clock className="mx-auto h-12 w-12 text-white/40" />
+            <h3 className="mt-2 text-sm font-medium text-white">
               No se encontraron pedidos
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-white/60">
               {searchQuery || statusFilter !== 'all'
                 ? 'Intenta ajustar los filtros de búsqueda'
                 : 'No hay pedidos registrados'}
@@ -170,53 +170,53 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-white/5">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60">
                     Orden
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60">
                     Cliente
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60">
                     Monto
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60">
                     Comprobante
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60">
                     Estado
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60">
                     Fecha
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-white/60">
                     Acciones
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white/5 divide-y divide-white/10">
                 {filteredOrders.map((order) => {
                   const isProcessing = processingOrderId === order.id
                   const canApprove = order.payment_status === 'pending'
                   const canReject = order.payment_status === 'pending'
 
                   return (
-                    <tr key={order.id} className="hover:bg-gray-50">
+                    <tr key={order.id} className="hover:bg-white/10 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-white">
                           {order.order_number || 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-white/60">
                           {order.points_earned} puntos
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-white">
                           {order.profiles?.public_name || 'Sin nombre'}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-white/60">
                           {order.profiles?.referral_code}
                         </div>
                         {order.profiles?.status_level && (
@@ -226,7 +226,7 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-white">
                           ${order.total_amount.toLocaleString('es-PE', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
@@ -237,19 +237,19 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
                         {order.payment_proof_url ? (
                           <button
                             onClick={() => setViewingVoucher(order.payment_proof_url!)}
-                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                            className="inline-flex items-center gap-1 text-sm text-[#FFD700] hover:text-yellow-400 transition-colors"
                           >
                             <Eye className="h-4 w-4" />
                             Ver Voucher
                           </button>
                         ) : (
-                          <span className="text-sm text-gray-400">Sin comprobante</span>
+                          <span className="text-sm text-white/40">Sin comprobante</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {getStatusBadge(order.payment_status)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                         {new Date(order.created_at).toLocaleDateString('es-PE', {
                           year: 'numeric',
                           month: 'short',
@@ -264,7 +264,7 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
                             <button
                               onClick={() => handleApprove(order.id)}
                               disabled={isProcessing}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-[#4CAF50] text-white text-sm rounded-md hover:bg-[#45a049] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                               title="Aprobar pedido"
                             >
                               {isProcessing ? (
@@ -279,7 +279,7 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
                             <button
                               onClick={() => handleReject(order.id)}
                               disabled={isProcessing}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-[#ea2a33] text-white text-sm rounded-md hover:bg-[#d11a23] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                               title="Rechazar pedido"
                             >
                               {isProcessing ? (
@@ -301,8 +301,8 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
         )}
 
         {/* Footer con contador */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-          <p className="text-sm text-gray-500">
+        <div className="px-6 py-4 border-t border-white/10 bg-white/5">
+          <p className="text-sm text-white/60">
             Mostrando {filteredOrders.length} de {orders.length} pedidos
           </p>
         </div>
@@ -310,13 +310,13 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
 
       {/* Modal para ver voucher */}
       {viewingVoucher && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="relative bg-white rounded-lg shadow-xl max-w-4xl max-h-[90vh] overflow-auto m-4">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Comprobante de Pago</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm">
+          <div className="relative bg-[#121212] border border-white/10 rounded-xl shadow-xl max-w-4xl max-h-[90vh] overflow-auto m-4">
+            <div className="sticky top-0 bg-[#121212] border-b border-white/10 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-white">Comprobante de Pago</h2>
               <button
                 onClick={() => setViewingVoucher(null)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-white/60 hover:text-white transition-colors"
               >
                 <XCircle className="h-6 w-6" />
               </button>
@@ -325,14 +325,14 @@ export function OrdersTable({ initialOrders, allOrders }: OrdersTableProps) {
               {viewingVoucher.endsWith('.pdf') ? (
                 <iframe
                   src={viewingVoucher}
-                  className="w-full h-[600px] border"
+                  className="w-full h-[600px] border border-white/10 rounded"
                   title="Comprobante de pago PDF"
                 />
               ) : (
                 <img
                   src={viewingVoucher}
                   alt="Comprobante de pago"
-                  className="max-w-full h-auto mx-auto"
+                  className="max-w-full h-auto mx-auto rounded"
                 />
               )}
             </div>

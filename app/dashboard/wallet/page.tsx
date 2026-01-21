@@ -31,12 +31,12 @@ export default async function WalletPage() {
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case 'COMMISSION':
-        return <ArrowUpRight className="h-5 w-5 text-green-600" />
+        return <ArrowUpRight className="h-5 w-5 text-[#4CAF50]" />
       case 'PURCHASE':
       case 'WITHDRAWAL':
-        return <ArrowDownRight className="h-5 w-5 text-red-600" />
+        return <ArrowDownRight className="h-5 w-5 text-[#ea2a33]" />
       default:
-        return <DollarSign className="h-5 w-5 text-gray-600" />
+        return <DollarSign className="h-5 w-5 text-white/40" />
     }
   }
 
@@ -62,8 +62,8 @@ export default async function WalletPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Billetera</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-white">Billetera</h1>
+          <p className="mt-1 text-sm text-white/60">
             Gestiona tus ganancias y retiros
           </p>
         </div>
@@ -71,7 +71,7 @@ export default async function WalletPage() {
       </div>
 
       {/* Balance Card */}
-      <div className="overflow-hidden rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+      <div className="overflow-hidden rounded-xl bg-gradient-to-br from-[#ea2a33] to-[#d11a23] shadow-lg">
         <div className="p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
@@ -92,91 +92,91 @@ export default async function WalletPage() {
       </div>
 
       {/* Transactions Table */}
-      <div className="overflow-hidden rounded-lg bg-white shadow">
+      <div className="overflow-hidden rounded-xl bg-white/5 border border-white/10 shadow-lg backdrop-blur-sm">
         <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">
+          <h3 className="text-lg font-medium leading-6 text-white">
             Historial de Transacciones
           </h3>
-          <p className="mt-1 max-w-2xl text-sm text-gray-500">
+          <p className="mt-1 max-w-2xl text-sm text-white/60">
             Todas tus transacciones de comisiones, compras y retiros
           </p>
         </div>
-        <div className="border-t border-gray-200">
+        <div className="border-t border-white/10">
           {transactions.length === 0 ? (
             <div className="px-4 py-12 text-center sm:px-6">
-              <DollarSign className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
+              <DollarSign className="mx-auto h-12 w-12 text-white/40" />
+              <h3 className="mt-2 text-sm font-medium text-white">
                 No hay transacciones aún
               </h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-white/60">
                 Tus transacciones aparecerán aquí cuando comiences a ganar
                 comisiones
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white/10">
+                <thead className="bg-white/5">
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60"
                     >
                       Fecha
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60"
                     >
                       Tipo
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60"
                     >
                       Descripción
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                      className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-white/60"
                     >
                       Monto
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                      className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-white/60"
                     >
                       Balance
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-y divide-white/10 bg-white/5">
                   {transactions.map((transaction: any) => {
                     const isPositive = Number(transaction.amount) > 0
                     return (
-                      <tr key={transaction.id}>
-                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      <tr key={transaction.id} className="hover:bg-white/10 transition-colors">
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-white/60">
                           {formatDate(transaction.created_at)}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="flex items-center gap-2">
                             {getTransactionIcon(transaction.transaction_type)}
-                            <span className="text-sm text-gray-900">
+                            <span className="text-sm text-white">
                               {getTransactionLabel(transaction.transaction_type)}
                             </span>
                             {transaction.commission_level && (
-                              <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                              <span className="rounded bg-[#ea2a33]/20 text-[#ea2a33] px-2 py-0.5 text-xs font-medium border border-[#ea2a33]/30">
                                 Nivel {transaction.commission_level}
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-white/60">
                           {transaction.description || '-'}
                         </td>
                         <td
                           className={`whitespace-nowrap px-6 py-4 text-right text-sm font-medium ${
-                            isPositive ? 'text-green-600' : 'text-red-600'
+                            isPositive ? 'text-[#4CAF50]' : 'text-[#ea2a33]'
                           }`}
                         >
                           {isPositive ? '+' : ''}
@@ -189,7 +189,7 @@ export default async function WalletPage() {
                             }
                           )}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
+                        <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-white/60">
                           $
                           {Number(transaction.balance_after).toLocaleString(
                             'es-PE',
@@ -211,4 +211,3 @@ export default async function WalletPage() {
     </div>
   )
 }
-

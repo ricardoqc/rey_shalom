@@ -26,7 +26,7 @@ export function RankProgress({ profile, rankRequirements }: RankProgressProps) {
   if (!nextRank) {
     // Ya está en el rango más alto
     return (
-      <div className="rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-600 p-6 text-white shadow-lg">
+      <div className="rounded-xl bg-gradient-to-r from-[#FFD700] to-[#FFA500] p-6 text-black shadow-lg">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold">¡Felicidades!</h3>
@@ -51,39 +51,39 @@ export function RankProgress({ profile, rankRequirements }: RankProgressProps) {
   const getRankColor = (rank: string) => {
     switch (rank) {
       case 'ORO':
-        return 'from-yellow-400 to-yellow-600'
+        return 'from-[#FFD700] to-[#FFA500]'
       case 'PLATA':
-        return 'from-gray-300 to-gray-500'
+        return 'from-gray-400 to-gray-600'
       case 'BRONCE':
-        return 'from-orange-300 to-orange-500'
+        return 'from-orange-400 to-orange-600'
       default:
-        return 'from-gray-200 to-gray-400'
+        return 'from-gray-300 to-gray-500'
     }
   }
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow">
+    <div className="overflow-hidden rounded-xl bg-white/5 border border-white/10 shadow-lg backdrop-blur-sm">
       <div className="p-6">
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-white">
             Progreso hacia {nextRank.rank_name}
           </h3>
-          <p className="mt-1 text-sm text-gray-600">
-            Rango actual: <span className="font-medium">{currentRank}</span>
+          <p className="mt-1 text-sm text-white/60">
+            Rango actual: <span className="font-medium text-white">{currentRank}</span>
           </p>
         </div>
 
         {/* Barra de progreso */}
         <div className="mb-4">
           <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-gray-600">
+            <span className="text-white/60">
               {currentPoints} / {nextRank.min_points} puntos
             </span>
-            <span className="font-medium text-gray-900">
+            <span className="font-medium text-white">
               {progressPercentage.toFixed(0)}%
             </span>
           </div>
-          <div className="h-4 w-full overflow-hidden rounded-full bg-gray-200">
+          <div className="h-4 w-full overflow-hidden rounded-full bg-white/10">
             <div
               className={`h-full bg-gradient-to-r ${getRankColor(nextRank.rank_name)} transition-all duration-500 ease-out`}
               style={{ width: `${progressPercentage}%` }}
@@ -93,7 +93,7 @@ export function RankProgress({ profile, rankRequirements }: RankProgressProps) {
 
         {/* Mensaje motivador */}
         <div
-          className={`rounded-lg bg-gradient-to-r ${getRankColor(nextRank.rank_name)} p-4 text-white`}
+          className={`rounded-lg bg-gradient-to-r ${getRankColor(nextRank.rank_name)} p-4 text-black`}
         >
           <p className="text-sm font-medium">
             {pointsNeeded > 0 ? (
@@ -113,4 +113,3 @@ export function RankProgress({ profile, rankRequirements }: RankProgressProps) {
     </div>
   )
 }
-

@@ -42,8 +42,8 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-medium text-gray-900">Datos de Contacto y Dirección</h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <h2 className="text-lg font-medium text-white">Datos de Contacto y Dirección</h2>
+        <p className="mt-1 text-sm text-white/60">
           Actualiza tu información de contacto y dirección de envío
         </p>
       </div>
@@ -51,7 +51,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Teléfono */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="phone" className="block text-sm font-medium text-white">
             Teléfono
           </label>
           <input
@@ -59,14 +59,14 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
             id="phone"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
             placeholder="+51 987 654 321"
           />
         </div>
 
         {/* WhatsApp */}
         <div>
-          <label htmlFor="whatsapp_number" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="whatsapp_number" className="block text-sm font-medium text-white">
             Número de WhatsApp
           </label>
           <input
@@ -74,24 +74,24 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
             id="whatsapp_number"
             value={formData.whatsapp_number}
             onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
             placeholder="+51 987 654 321"
           />
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-white/50">
             Formato: +51 987 654 321 (incluye código de país)
           </p>
         </div>
 
         {/* Tipo de WhatsApp */}
         <div>
-          <label htmlFor="whatsapp_type" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="whatsapp_type" className="block text-sm font-medium text-white">
             Tipo de WhatsApp
           </label>
           <select
             id="whatsapp_type"
             value={formData.whatsapp_type}
             onChange={(e) => setFormData({ ...formData, whatsapp_type: e.target.value as 'personal' | 'business' })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
           >
             <option value="personal">Personal</option>
             <option value="business">Business</option>
@@ -100,7 +100,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
 
         {/* Dirección */}
         <div>
-          <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="address" className="block text-sm font-medium text-white">
             Dirección
           </label>
           <textarea
@@ -108,14 +108,14 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
             rows={3}
             value={formData.address}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
             placeholder="Calle, número, referencia"
           />
         </div>
 
         {/* Ciudad */}
         <div>
-          <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="city" className="block text-sm font-medium text-white">
             Ciudad
           </label>
           <input
@@ -123,14 +123,14 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
             id="city"
             value={formData.city}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
             placeholder="Lima"
           />
         </div>
 
         {/* País */}
         <div>
-          <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="country" className="block text-sm font-medium text-white">
             País
           </label>
           <input
@@ -138,7 +138,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
             id="country"
             value={formData.country}
             onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
             placeholder="Perú"
           />
         </div>
@@ -147,7 +147,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-md bg-[#ea2a33] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#d11a23] focus:outline-none focus:ring-2 focus:ring-[#ea2a33] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
               <>
