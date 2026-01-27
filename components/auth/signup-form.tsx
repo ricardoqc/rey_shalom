@@ -126,7 +126,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
         <div>
           <label
             htmlFor="publicName"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium text-[#1A1A1A]"
           >
             Nombre Público (Opcional)
           </label>
@@ -136,7 +136,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             type="text"
             value={publicName}
             onChange={(e) => setPublicName(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
             placeholder="Tu nombre público"
           />
         </div>
@@ -144,7 +144,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium text-[#1A1A1A]"
           >
             Correo Electrónico
           </label>
@@ -156,7 +156,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
             placeholder="tu@email.com"
           />
         </div>
@@ -164,7 +164,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
         <div>
           <label
             htmlFor="referralCode"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium text-[#1A1A1A]"
           >
             Código de Patrocinador {referralCodeLocked && '(Pre-llenado)'}
           </label>
@@ -192,11 +192,11 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             {referralCode && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 {validatingCode ? (
-                  <Loader2 className="h-5 w-5 animate-spin text-white/40" />
+                  <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
                 ) : referralCodeValid === true ? (
                   <CheckCircle2 className="h-5 w-5 text-[#4CAF50]" />
                 ) : referralCodeValid === false ? (
-                  <XCircle className="h-5 w-5 text-[#ea2a33]" />
+                  <XCircle className="h-5 w-5 text-red-500" />
                 ) : null}
               </div>
             )}
@@ -208,7 +208,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             </p>
           )}
           {referralCode && referralCodeValid === false && !validatingCode && (
-            <p className="mt-1 text-xs text-[#ea2a33]">
+            <p className="mt-1 text-xs text-red-500">
               Código de patrocinador no válido
             </p>
           )}
@@ -217,7 +217,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium text-[#1A1A1A]"
           >
             Contraseña
           </label>
@@ -229,7 +229,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
             placeholder="Mínimo 6 caracteres"
           />
         </div>
@@ -237,7 +237,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium text-[#1A1A1A]"
           >
             Confirmar Contraseña
           </label>
@@ -249,15 +249,15 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             required
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
             placeholder="Repite tu contraseña"
           />
         </div>
       </div>
 
       {error && (
-        <div className="rounded-md bg-[#ea2a33]/20 border border-[#ea2a33]/30 p-4">
-          <p className="text-sm text-[#ea2a33]">{error}</p>
+        <div className="rounded-md bg-red-50 border border-red-200 p-4">
+          <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
 
@@ -279,10 +279,10 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
       </div>
 
       <div className="text-center text-sm">
-        <span className="text-white/60">¿Ya tienes cuenta? </span>
+        <span className="text-[#666666]">¿Ya tienes cuenta? </span>
         <Link
           href="/auth/login"
-          className="font-medium text-[#FFD700] hover:text-yellow-400 transition-colors"
+          className="font-medium text-[#4CAF50] hover:text-[#3d8b40] transition-colors"
         >
           Inicia sesión aquí
         </Link>

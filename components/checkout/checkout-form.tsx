@@ -36,10 +36,10 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-xl bg-white/5 border border-white/10 p-8 backdrop-blur-sm">
-        <p className="text-center text-white/60">
+      <div className="rounded-xl bg-white border border-gray-100 p-8 shadow-sm">
+        <p className="text-center text-[#666666]">
           Tu carrito está vacío.{' '}
-          <a href="/shop" className="text-[#FFD700] hover:underline">
+          <a href="/shop" className="text-[#4CAF50] hover:underline">
             Ir a la tienda
           </a>
         </p>
@@ -152,11 +152,11 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 rounded-xl bg-white/5 border border-white/10 p-6 backdrop-blur-sm">
-      <h2 className="text-xl font-semibold text-white">Información de Envío</h2>
+    <form onSubmit={handleSubmit} className="space-y-6 rounded-xl bg-white/5 border border-gray-100 p-6 backdrop-blur-sm">
+      <h2 className="text-xl font-semibold text-[#1A1A1A]">Información de Envío</h2>
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-white">
+        <label htmlFor="name" className="block text-sm font-medium text-[#1A1A1A]">
           Nombre Completo *
         </label>
         <input
@@ -165,12 +165,12 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
           required
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+          className="mt-1 block w-full rounded-md bg-white/5 border border-gray-100 px-3 py-2 text-[#1A1A1A] placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
         />
       </div>
 
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-white">
+        <label htmlFor="phone" className="block text-sm font-medium text-[#1A1A1A]">
           Teléfono *
         </label>
         <input
@@ -179,12 +179,12 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
           required
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+          className="mt-1 block w-full rounded-md bg-white/5 border border-gray-100 px-3 py-2 text-[#1A1A1A] placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
         />
       </div>
 
       <div>
-        <label htmlFor="address" className="block text-sm font-medium text-white">
+        <label htmlFor="address" className="block text-sm font-medium text-[#1A1A1A]">
           Dirección *
         </label>
         <textarea
@@ -193,13 +193,13 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
           rows={3}
           value={formData.address}
           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-          className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+          className="mt-1 block w-full rounded-md bg-white/5 border border-gray-100 px-3 py-2 text-[#1A1A1A] placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="city" className="block text-sm font-medium text-white">
+          <label htmlFor="city" className="block text-sm font-medium text-[#1A1A1A]">
             Ciudad *
           </label>
           <input
@@ -208,12 +208,12 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
             required
             value={formData.city}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+            className="mt-1 block w-full rounded-md bg-white/5 border border-gray-100 px-3 py-2 text-[#1A1A1A] placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
           />
         </div>
 
         <div>
-          <label htmlFor="country" className="block text-sm font-medium text-white">
+          <label htmlFor="country" className="block text-sm font-medium text-[#1A1A1A]">
             País *
           </label>
           <input
@@ -222,23 +222,23 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
             required
             value={formData.country}
             onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+            className="mt-1 block w-full rounded-md bg-white/5 border border-gray-100 px-3 py-2 text-[#1A1A1A] placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
           />
         </div>
       </div>
 
       {/* Sección de Comprobante de Pago */}
-      <div className="pt-4 border-t border-white/10">
-        <h3 className="text-lg font-semibold text-white mb-4">
+      <div className="pt-4 border-t border-gray-100">
+        <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">
           Comprobante de Pago *
         </h3>
-        <p className="text-sm text-white/60 mb-4">
+        <p className="text-sm text-[#1A1A1A]/60 mb-4">
           Adjunta una foto o PDF de tu comprobante de pago (transferencia, depósito, etc.)
         </p>
 
         {paymentProofPreview ? (
           <div className="relative">
-            <div className="border-2 border-white/10 rounded-lg p-4 bg-white/5">
+            <div className="border-2 border-gray-100 rounded-lg p-4 bg-white/5">
               <img
                 src={paymentProofPreview}
                 alt="Preview del comprobante"
@@ -248,7 +248,7 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
             <button
               type="button"
               onClick={handleRemoveProof}
-              className="absolute top-2 right-2 p-1 bg-[#ea2a33] text-white rounded-full hover:bg-[#d11a23] transition-colors"
+              className="absolute top-2 right-2 p-1 bg-[#4CAF50] text-white rounded-full hover:bg-[#3d8b40] transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -260,13 +260,13 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
             )}
           </div>
         ) : paymentProofFile && !paymentProofPreview ? (
-          <div className="border-2 border-white/10 rounded-lg p-4 bg-white/5">
-            <div className="flex items-center gap-2 text-white">
+          <div className="border-2 border-gray-100 rounded-lg p-4 bg-white/5">
+            <div className="flex items-center gap-2 text-[#1A1A1A]">
               <FileText className="h-5 w-5" />
               <span className="text-sm">{paymentProofFile.name}</span>
             </div>
             {isUploadingProof && (
-              <p className="mt-2 text-sm text-[#FFD700] flex items-center gap-1">
+              <p className="mt-2 text-sm text-[#D4AF37] flex items-center gap-1">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Subiendo comprobante...
               </p>
@@ -286,13 +286,13 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
             </button>
           </div>
         ) : (
-          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-white/10 border-dashed rounded-lg cursor-pointer bg-white/5 hover:bg-white/10 transition-colors">
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-100 border-dashed rounded-lg cursor-pointer bg-white/5 hover:bg-gray-100 transition-colors">
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <Upload className="w-8 h-8 mb-2 text-white/40" />
-              <p className="mb-2 text-sm text-white/60">
-                <span className="font-semibold text-white">Click para subir</span> o arrastra y suelta
+              <Upload className="w-8 h-8 mb-2 text-gray-400" />
+              <p className="mb-2 text-sm text-[#1A1A1A]/60">
+                <span className="font-semibold text-[#1A1A1A]">Click para subir</span> o arrastra y suelta
               </p>
-              <p className="text-xs text-white/50">
+              <p className="text-xs text-[#666666]">
                 PNG, JPG, PDF hasta 5MB
               </p>
             </div>
@@ -307,7 +307,7 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
         )}
 
         {isUploadingProof && (
-          <div className="mt-2 flex items-center gap-2 text-sm text-[#FFD700]">
+          <div className="mt-2 flex items-center gap-2 text-sm text-[#D4AF37]">
             <Loader2 className="h-4 w-4 animate-spin" />
             Subiendo comprobante...
           </div>
@@ -318,7 +318,7 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
         <button
           type="submit"
           disabled={loading || isUploadingProof || !paymentProofUrl}
-          className="w-full flex items-center justify-center rounded-md bg-[#ea2a33] px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-[#d11a23] focus:outline-none focus:ring-2 focus:ring-[#ea2a33] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center rounded-md bg-[#4CAF50] px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-[#3d8b40] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {loading ? (
             <>
@@ -329,7 +329,7 @@ export function CheckoutForm({ user, profile }: CheckoutFormProps) {
             'Confirmar Pedido'
           )}
         </button>
-        <p className="mt-2 text-xs text-white/50 text-center">
+        <p className="mt-2 text-xs text-[#666666] text-center">
           Tu pedido será revisado y aprobado manualmente. Recibirás una notificación cuando esté listo.
         </p>
       </div>

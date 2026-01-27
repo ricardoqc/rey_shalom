@@ -64,33 +64,37 @@ export function Navbar() {
   if (!user && sponsorCode) {
     return (
       <>
-        <div className="bg-blue-600 text-white py-2 px-4 text-sm text-center">
+        <div className="bg-[#2196F3] text-white py-2 px-4 text-sm text-center">
           <span>
             Estás comprando con la asesoría de:{' '}
             <strong className="font-semibold">{sponsorCode}</strong>
           </span>
         </div>
 
-        <header className="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-white/10">
+        <header className="fixed top-0 left-0 right-0 z-50 glass-nav-light border-b border-gray-100">
           <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="size-8 text-[#ea2a33]">
+              <div className="size-8 text-[#4CAF50]">
                 <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                   <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
                 </svg>
               </div>
-              <h1 className="text-xl font-black tracking-tighter uppercase italic">Rey Shalom</h1>
+              <Link href="/" className="hidden sm:block">
+                <span className="block text-xl font-black leading-none tracking-tighter text-[#4CAF50] italic uppercase">Rey Shalom</span>
+                <span className="text-[10px] font-bold text-gray-400 tracking-[0.2em]">S.A.C.</span>
+              </Link>
+              <Link href="/" className="sm:hidden">
+                <h1 className="text-xl font-black tracking-tighter uppercase italic text-[#4CAF50]">Rey Shalom</h1>
+              </Link>
             </div>
             
-            <nav className="hidden md:flex items-center gap-10">
+            <nav className="hidden md:flex items-center gap-8">
               {menuItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-sm font-medium transition-colors ${
-                    pathname === item.href
-                      ? 'text-[#FFD700]'
-                      : 'hover:text-[#FFD700]'
+                  className={`text-sm font-semibold transition-colors ${
+                    pathname === item.href ? 'text-[#4CAF50]' : 'text-[#1A1A1A] hover:text-[#4CAF50]'
                   }`}
                 >
                   {item.label}
@@ -98,17 +102,17 @@ export function Navbar() {
               ))}
             </nav>
             
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-4">
               <CartIcon />
               <Link
                 href="/auth/login"
-                className="px-6 py-2 rounded-full text-sm font-bold bg-white/5 hover:bg-white/10 transition-all border border-white/10"
+                className="px-6 py-2 rounded-full text-sm font-bold text-[#1A1A1A] hover:bg-gray-50 transition-all border border-gray-200"
               >
                 Ingresar
               </Link>
               <Link
                 href="/auth/signup"
-                className="px-6 py-2 rounded-full text-sm font-bold bg-[#FFD700] text-black hover:bg-yellow-400 transition-all shadow-lg"
+                className="px-6 py-2 rounded-full text-sm font-bold bg-[#D4AF37] text-white hover:bg-[#c29d2f] transition-all shadow-md"
               >
                 Únete Ahora
               </Link>
@@ -117,7 +121,7 @@ export function Navbar() {
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-white"
+                className="text-[#1A1A1A]"
               >
                 {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -125,32 +129,32 @@ export function Navbar() {
           </div>
 
           {mobileMenuOpen && (
-            <div className="md:hidden border-t border-white/10 bg-[#121212]/95 backdrop-blur-md">
+            <div className="md:hidden border-t border-gray-100 bg-white/95 backdrop-blur-md">
               <div className="px-4 py-4 space-y-3">
                 {menuItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700]"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-[#1A1A1A] hover:text-[#4CAF50]"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.label}
                   </Link>
                 ))}
-                <div className="pt-4 border-t border-white/10 space-y-3">
+                <div className="pt-4 border-t border-gray-100 space-y-3">
                   <div className="px-3 py-2">
                     <CartIcon />
                   </div>
                   <Link
                     href="/auth/login"
-                    className="block px-3 py-2 rounded-md text-base font-medium bg-white/5 text-white hover:bg-white/10 text-center"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-[#1A1A1A] hover:bg-gray-50 text-center border border-gray-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Ingresar
                   </Link>
                   <Link
                     href="/auth/signup"
-                    className="block px-3 py-2 rounded-md text-base font-medium bg-[#FFD700] text-black hover:bg-yellow-400 text-center"
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-[#D4AF37] text-white text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Únete Ahora
@@ -167,28 +171,30 @@ export function Navbar() {
   // Estado B: Usuario logueado
   if (user) {
     return (
-      <header className="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-white/10">
+      <header className="fixed top-0 left-0 right-0 z-50 glass-nav-light border-b border-gray-100">
         <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="size-8 text-[#ea2a33]">
+            <div className="size-8 text-[#4CAF50]">
               <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                 <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
               </svg>
             </div>
-            <Link href="/">
-              <h1 className="text-xl font-black tracking-tighter uppercase italic">Rey Shalom</h1>
+            <Link href="/" className="hidden sm:block">
+              <span className="block text-xl font-black leading-none tracking-tighter text-[#4CAF50] italic uppercase">Rey Shalom</span>
+              <span className="text-[10px] font-bold text-gray-400 tracking-[0.2em]">S.A.C.</span>
+            </Link>
+            <Link href="/" className="sm:hidden">
+              <h1 className="text-xl font-black tracking-tighter uppercase italic text-[#4CAF50]">Rey Shalom</h1>
             </Link>
           </div>
           
-          <nav className="hidden md:flex items-center gap-10">
+          <nav className="hidden md:flex items-center gap-8">
             {menuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition-colors ${
-                  pathname === item.href
-                    ? 'text-[#FFD700]'
-                    : 'hover:text-[#FFD700]'
+                className={`text-sm font-semibold transition-colors ${
+                  pathname === item.href ? 'text-[#4CAF50]' : 'text-[#1A1A1A] hover:text-[#4CAF50]'
                 }`}
               >
                 {item.label}
@@ -196,18 +202,18 @@ export function Navbar() {
             ))}
           </nav>
           
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-4">
             <CartIcon />
             <Link
               href="/dashboard"
-              className="text-sm font-medium hover:text-[#FFD700] transition-colors flex items-center gap-2"
+              className="text-sm font-medium text-[#1A1A1A] hover:text-[#4CAF50] transition-colors flex items-center gap-2"
             >
               <User className="h-4 w-4" />
               <span>Mi Oficina</span>
             </Link>
             <button
               onClick={handleSignOut}
-              className="text-sm font-medium hover:text-[#FFD700] transition-colors flex items-center gap-2"
+              className="text-sm font-medium text-[#1A1A1A] hover:text-[#4CAF50] transition-colors flex items-center gap-2"
             >
               <LogOut className="h-4 w-4" />
               <span>Cerrar Sesión</span>
@@ -217,7 +223,7 @@ export function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-white"
+              className="text-[#1A1A1A]"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -225,25 +231,25 @@ export function Navbar() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-white/10 bg-[#121212]/95 backdrop-blur-md">
+          <div className="md:hidden border-t border-gray-100 bg-white/95 backdrop-blur-md">
             <div className="px-4 py-4 space-y-3">
               {menuItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700]"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-[#1A1A1A] hover:text-[#4CAF50]"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.label}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-white/10 space-y-3">
+              <div className="pt-4 border-t border-gray-100 space-y-3">
                 <div className="px-3 py-2">
                   <CartIcon />
                 </div>
                 <Link
                   href="/dashboard"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700] flex items-center gap-2"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-[#1A1A1A] hover:text-[#4CAF50] flex items-center gap-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <User className="h-4 w-4" />
@@ -254,7 +260,7 @@ export function Navbar() {
                     handleSignOut()
                     setMobileMenuOpen(false)
                   }}
-                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700] flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-[#1A1A1A] hover:text-[#4CAF50] flex items-center gap-2"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Cerrar Sesión</span>
@@ -269,28 +275,30 @@ export function Navbar() {
 
   // Estado C: Visitante limpio
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-50 glass-nav-light border-b border-gray-100">
       <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="size-8 text-[#ea2a33]">
+          <div className="size-8 text-[#4CAF50]">
             <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
               <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
             </svg>
           </div>
-          <Link href="/">
-            <h1 className="text-xl font-black tracking-tighter uppercase italic">Rey Shalom</h1>
+          <Link href="/" className="hidden sm:block">
+            <span className="block text-xl font-black leading-none tracking-tighter text-[#4CAF50] italic uppercase">Rey Shalom</span>
+            <span className="text-[10px] font-bold text-gray-400 tracking-[0.2em]">S.A.C.</span>
+          </Link>
+          <Link href="/" className="sm:hidden">
+            <h1 className="text-xl font-black tracking-tighter uppercase italic text-[#4CAF50]">Rey Shalom</h1>
           </Link>
         </div>
         
-        <nav className="hidden md:flex items-center gap-10">
+        <nav className="hidden md:flex items-center gap-8">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`text-sm font-medium transition-colors ${
-                pathname === item.href
-                  ? 'text-[#FFD700]'
-                  : 'hover:text-[#FFD700]'
+              className={`text-sm font-semibold transition-colors ${
+                pathname === item.href ? 'text-[#4CAF50]' : 'text-[#1A1A1A] hover:text-[#4CAF50]'
               }`}
             >
               {item.label}
@@ -298,17 +306,17 @@ export function Navbar() {
           ))}
         </nav>
         
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-4">
           <CartIcon />
           <Link
             href="/auth/login"
-            className="px-6 py-2 rounded-full text-sm font-bold bg-white/5 hover:bg-white/10 transition-all border border-white/10"
+            className="px-6 py-2 rounded-full text-sm font-bold text-[#1A1A1A] hover:bg-gray-50 transition-all border border-gray-200"
           >
             Ingresar
           </Link>
           <Link
             href="/auth/signup"
-            className="px-6 py-2 rounded-full text-sm font-bold bg-[#FFD700] text-black hover:bg-yellow-400 transition-all shadow-lg"
+            className="px-6 py-2 rounded-full text-sm font-bold bg-[#D4AF37] text-white hover:bg-[#c29d2f] transition-all shadow-md"
           >
             Únete Ahora
           </Link>
@@ -317,7 +325,7 @@ export function Navbar() {
         <div className="md:hidden">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-white"
+            className="text-[#1A1A1A]"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -325,32 +333,32 @@ export function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#121212]/95 backdrop-blur-md">
+        <div className="md:hidden border-t border-gray-100 bg-white/95 backdrop-blur-md">
           <div className="px-4 py-4 space-y-3">
             {menuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700]"
+                className="block px-3 py-2 rounded-md text-base font-medium text-[#1A1A1A] hover:text-[#4CAF50]"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
-            <div className="pt-4 border-t border-white/10 space-y-3">
+            <div className="pt-4 border-t border-gray-100 space-y-3">
               <div className="px-3 py-2">
                 <CartIcon />
               </div>
               <Link
                 href="/auth/login"
-                className="block px-3 py-2 rounded-md text-base font-medium bg-white/5 text-white hover:bg-white/10 text-center"
+                className="block px-3 py-2 rounded-md text-base font-medium text-[#1A1A1A] hover:bg-gray-50 text-center border border-gray-200"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Ingresar
               </Link>
               <Link
                 href="/auth/signup"
-                className="block px-3 py-2 rounded-md text-base font-medium bg-[#FFD700] text-black hover:bg-yellow-400 text-center"
+                className="block px-3 py-2 rounded-md text-base font-medium bg-[#D4AF37] text-white text-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Únete Ahora

@@ -11,11 +11,11 @@ export function CartIcon() {
   return (
     <Link
       href="/checkout"
-      className="relative flex items-center justify-center rounded-full p-2 text-white hover:bg-white/10 transition-colors"
+      className="relative flex items-center justify-center rounded-full p-2 text-[#1A1A1A] hover:bg-gray-100 transition-colors"
     >
       <ShoppingCart className="h-6 w-6" />
       {itemCount > 0 && (
-        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#ea2a33] text-xs font-bold text-white">
+        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#4CAF50] text-xs font-bold text-white">
           {itemCount > 9 ? '9+' : itemCount}
         </span>
       )}

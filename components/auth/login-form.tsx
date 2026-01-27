@@ -47,7 +47,7 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium text-[#1A1A1A]"
           >
             Correo Electrónico
           </label>
@@ -59,7 +59,7 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
             placeholder="tu@email.com"
           />
         </div>
@@ -67,7 +67,7 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium text-[#1A1A1A]"
           >
             Contraseña
           </label>
@@ -79,15 +79,15 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:outline-none focus:ring-1 focus:ring-[#ea2a33]"
+            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
             placeholder="••••••••"
           />
         </div>
       </div>
 
       {error && (
-        <div className="rounded-md bg-[#ea2a33]/20 border border-[#ea2a33]/30 p-4">
-          <p className="text-sm text-[#ea2a33]">{error}</p>
+        <div className="rounded-md bg-red-50 border border-red-200 p-4">
+          <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
 
@@ -95,7 +95,7 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#ea2a33] hover:bg-[#d11a23] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#121212] focus:ring-[#ea2a33] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4CAF50] hover:bg-[#3d8b40] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-[#4CAF50] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {loading ? (
             <>
@@ -109,10 +109,10 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
       </div>
 
       <div className="text-center text-sm">
-        <span className="text-white/60">¿No tienes cuenta? </span>
+        <span className="text-[#666666]">¿No tienes cuenta? </span>
         <Link
           href="/auth/signup"
-          className="font-medium text-[#FFD700] hover:text-yellow-400 transition-colors"
+          className="font-medium text-[#4CAF50] hover:text-[#3d8b40] transition-colors"
         >
           Regístrate aquí
         </Link>
