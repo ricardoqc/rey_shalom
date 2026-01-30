@@ -6,11 +6,24 @@ import {
   MessageCircle,
 } from 'lucide-react'
 import { Footer } from '@/components/footer'
+import { getProducts } from '@/app/actions/shop'
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Intentar obtener productos destacados
+  let featuredProducts = await getProducts({ featured: true })
+
+  // Si no hay destacados, obtener los 4 más recientes
+  if (featuredProducts.length === 0) {
+    const allProducts = await getProducts()
+    featuredProducts = allProducts.slice(0, 4)
+  } else {
+    // Si hay más de 4 destacados, limitar a 4
+    featuredProducts = featuredProducts.slice(0, 4)
+  }
+
   return (
     <div className="min-h-screen bg-white text-[#1A1A1A] font-['Public_Sans',sans-serif]">
-      {/* Hero Section - fondo #f9fafb, overlay blanco */}
+      {/* ... (Hero section unchanged) */}
       <section className="relative min-h-[85vh] flex items-center px-6 overflow-hidden bg-[#f9fafb] pt-20">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/40 to-transparent z-10"></div>
@@ -134,26 +147,21 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { name: 'Clorofila Premium', cat: 'Vitalidad & Detox', price: 'S/. 85.00', pv: '40 PV', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA84jBpbew6i_QZadW3JBSm0TBgafblUa9FZIp_kQjeNs4zBOJ9cHgLms7mHQMBhl7_yRHiQK_PAltka4_5S7VIxDJgUpDILIMXQCQyNjRCc2ph0SAn4gsSD21loRzdJ4uQ6GqNsxqZsP4zunn5xffDfKUDq3Us2TSTRWNMP1zMSOXj7GtNz-CADMtqvPio_o09P9aWyIgo1J68nqNliVAS1ucqdyzktee1Je-g7cysmhakg8aYrIPSC_-OBM6z0LW14o7JENa0Ohk' },
-              { name: 'Energizante Natural', cat: 'Fuerza Pura', price: 'S/. 95.00', pv: '45 PV', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCPJ30dFnVq4u1Bm-AqmkUpy_27P0IuNso4-h1Sh0wjybdS8DJHjRWKu4YRYLKt0ap2I9T8ILlDBq8GVy3vGkiDi_-XAhc4eveTF0JuRh4kRESQnwzOol7FWXKy3wakEpzqexijISz1OZC4VnHdP2LyIj0USnrZOeDyJYKnz2_T5ablkHpDxobSYJcAv_xte5qRuV0-0ARXAqNARQhNo8K6NhGv36Okm1hvCr7_VMal6m-TSfO4o71JFu5MOXt2ArfgdxWL3op1YBA' },
-              { name: 'Multivitamínico Oro', cat: 'Sistema Inmune', price: 'S/. 120.00', pv: '60 PV', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPWmGWBR-npnXj-RsFnNPZGqsdLdLdcYCpAhnpdmkTaWNu0TyyAkgAft0hgRzNz7MXklWBabdJPDAPxb9016I4SpPszjtq5P22e1jirTvYgqk_OeO3nQCElJkqcZqiRH3oW7VPUCLxcAyjGKFgMRY2VkpQVvnukFQKPXj9qqEqS0_PUHuP_HLfOVSPogcjXXLHpVqwWxhSr0JANBrgsG2LYspa2bgA2qmLGlDMcJuimsC7UGRU30VmBxF6f6GD3t8KtQdlQTpHwqs' },
-              { name: 'Colágeno Hidrolizado', cat: 'Piel & Articulaciones', price: 'S/. 110.00', pv: '55 PV', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCqBzNMbYKx4tqh1GKKONZhZtBSMDWg3lTazShnMGLV3s6_59Nm96e0BD2FF-8D7OUXjqVxIJmhH6ytuQV2lW3GUsJB3dYXUAnx7aCS0ofIyrrRzugOgwr-mFLvpflB1_o527yhfxOUa4zZAz7Zrst7Q8q5Fyr7OVhm3f68YJ55v-sL_a-2dkJHWRmGCL1eamp-J0UnptTyaHSN1wnO3K6Nah98yEeS4d5-dzhiLVWyL0ErZKxCcWHXmYtREbul5ixe_ZDrMOupmG0' },
-            ].map((p) => (
-              <Link key={p.name} href="/shop" className="group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-lg transition-all block">
+            {featuredProducts.map((p: any) => (
+              <Link key={p.id} href="/shop" className="group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-lg transition-all block">
                 <div className="relative aspect-square overflow-hidden rounded-xl mb-4 bg-gray-50">
                   <div
                     className="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-                    style={{ backgroundImage: `url('${p.img}')` }}
+                    style={{ backgroundImage: `url('${p.image_url || 'https://via.placeholder.com/400'}')` }}
                   />
                   <div className="absolute top-3 right-3 bg-[#D4AF37] text-white font-black text-xs px-3 py-1 rounded-full shadow-lg">
-                    {p.pv}
+                    {p.points_per_unit} PV
                   </div>
                 </div>
                 <h4 className="text-lg font-bold mb-1 group-hover:text-[#4CAF50] transition-colors text-[#1A1A1A]">{p.name}</h4>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[#666666] text-sm">{p.cat}</span>
-                  <span className="text-[#4CAF50] font-black text-lg">{p.price}</span>
+                  <span className="text-[#666666] text-sm">{p.category || 'Catálogo'}</span>
+                  <span className="text-[#4CAF50] font-black text-lg">S/. {Number(p.base_price).toFixed(2)}</span>
                 </div>
               </Link>
             ))}

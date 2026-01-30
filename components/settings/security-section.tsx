@@ -41,129 +41,134 @@ export function SecuritySection() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <div>
-        <h2 className="text-lg font-medium text-gray-900">Seguridad</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Cambia tu contraseña para mantener tu cuenta segura
+        <h2 className="text-xl font-black text-text-dark tracking-tight">Seguridad de la Cuenta</h2>
+        <p className="mt-1 text-sm text-text-muted font-medium">
+          Mantén tu cuenta protegida actualizando tu contraseña periódicamente
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl">
         {/* Contraseña Actual */}
-        <div>
-          <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
+        <div className="space-y-2">
+          <label htmlFor="currentPassword" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
             Contraseña Actual
           </label>
-          <div className="mt-1 relative">
+          <div className="relative group/input">
             <input
               type={showCurrentPassword ? 'text' : 'password'}
               id="currentPassword"
               value={formData.currentPassword}
               onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm pr-10"
+              className="block w-full rounded-full bg-gray-50 border-gray-100 text-text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold pr-14"
               required
             />
             <button
               type="button"
               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute inset-y-0 right-0 pr-6 flex items-center text-gray-400 hover:text-primary transition-colors"
             >
               {showCurrentPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
+                <EyeOff className="h-5 w-5" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
+                <Eye className="h-5 w-5" />
               )}
             </button>
           </div>
         </div>
 
-        {/* Nueva Contraseña */}
-        <div>
-          <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-            Nueva Contraseña
-          </label>
-          <div className="mt-1 relative">
-            <input
-              type={showNewPassword ? 'text' : 'password'}
-              id="newPassword"
-              value={formData.newPassword}
-              onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm pr-10"
-              required
-              minLength={6}
-            />
-            <button
-              type="button"
-              onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-            >
-              {showNewPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
-              ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
-              )}
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Nueva Contraseña */}
+          <div className="space-y-2">
+            <label htmlFor="newPassword" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+              Nueva Contraseña
+            </label>
+            <div className="relative group/input">
+              <input
+                type={showNewPassword ? 'text' : 'password'}
+                id="newPassword"
+                value={formData.newPassword}
+                onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                className="block w-full rounded-full bg-gray-50 border-gray-100 text-text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold pr-14"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute inset-y-0 right-0 pr-6 flex items-center text-gray-400 hover:text-primary transition-colors"
+              >
+                {showNewPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+            <p className="mt-1 text-[9px] font-black text-text-muted uppercase tracking-wider ml-4">
+              Mínimo 6 caracteres alfanuméricos
+            </p>
           </div>
-          <p className="mt-1 text-xs text-gray-500">
-            Mínimo 6 caracteres
-          </p>
-        </div>
 
-        {/* Confirmar Nueva Contraseña */}
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-            Confirmar Nueva Contraseña
-          </label>
-          <div className="mt-1 relative">
-            <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              id="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm pr-10"
-              required
-              minLength={6}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
-              ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
-              )}
-            </button>
+          {/* Confirmar Nueva Contraseña */}
+          <div className="space-y-2">
+            <label htmlFor="confirmPassword" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+              Confirmar Contraseña
+            </label>
+            <div className="relative group/input">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                className="block w-full rounded-full bg-gray-50 border-gray-100 text-text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold pr-14"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-0 pr-6 flex items-center text-gray-400 hover:text-primary transition-colors"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Info sobre 2FA */}
-        <div className="rounded-md bg-blue-50 p-4">
-          <div className="flex">
+        <div className="rounded-3xl bg-secondary p-8 border border-primary/10 relative overflow-hidden group/2fa">
+          <div className="absolute right-0 top-0 size-24 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover/2fa:scale-150 transition-transform duration-700"></div>
+          <div className="flex gap-4">
             <div className="flex-shrink-0">
-              <Shield className="h-5 w-5 text-blue-400" />
+              <div className="size-12 rounded-2xl bg-white flex items-center justify-center text-primary shadow-sm">
+                <Shield className="h-6 w-6" />
+              </div>
             </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">
-                Autenticación de Dos Factores (2FA)
+            <div className="relative z-10">
+              <h3 className="text-sm font-black text-text-dark uppercase tracking-tight">
+                Autenticación Segura (2FA)
               </h3>
-              <div className="mt-2 text-sm text-blue-700">
+              <div className="mt-2 text-sm text-text-muted font-medium">
                 <p>
-                  La autenticación de dos factores estará disponible próximamente.
-                  Esta función añadirá una capa adicional de seguridad a tu cuenta.
+                  Estamos trabajando en añadir protección de 2 factores vía App o SMS.
+                  Esta función añadirá una capa adicional de seguridad blindada a tu oficina virtual muy pronto.
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="pt-4 flex justify-end">
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-10 py-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? (
               <>

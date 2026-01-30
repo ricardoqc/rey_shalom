@@ -57,27 +57,28 @@ export function AdminSidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-[#121212] border-r border-white/10 transform transition-transform duration-300 ease-in-out lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 transform transition-transform duration-300 ease-in-out lg:translate-x-0',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="flex h-16 shrink-0 items-center border-b border-white/10 px-6">
+          <div className="flex h-20 shrink-0 items-center border-b border-gray-50 px-6">
             <div className="flex items-center gap-3">
-              <div className="size-6 text-[#ea2a33]">
-                <svg fill="currentColor" viewBox="0 0 48 48">
-                  <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
-                </svg>
+              <img
+                alt="Logo"
+                className="h-8 w-auto"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXQ-Ub8KSIvLy27nHLJZtQ1yr4qDoJ7uWIZW9XYPVS7-24K8Lvp-CaJFuVoFdrhtm0yzG0cEqUnSHXq2zNQmtADNQJlz1woQyaVGrv74tD94GdCTGoYsMC4rS3HCXkMiKZPA_cneii2TdCWE8mni7BNuzl4c8mrDOnzPDmM1EWZ-FFrufnRA5WLv514jVeLpPVm-l-R-Brcu9vc2OB9rUElkjNa8rT7SQRYGvuzRgExl3kcztXv0lpyfRvdUhJ_lWDm13XanGF51s"
+              />
+              <div className="hidden sm:block">
+                <span className="block text-sm font-black leading-none tracking-tighter text-primary italic uppercase">Rey Shalom</span>
+                <span className="text-[8px] font-bold text-gray-400 tracking-[0.2em]">ADMIN</span>
               </div>
-              <h1 className="text-xl font-black tracking-tighter uppercase italic text-white">
-                Admin Panel
-              </h1>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex flex-1 flex-col gap-1 px-3 py-4">
+          <nav className="flex flex-1 flex-col gap-1.5 px-4 py-6">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
               return (
@@ -86,16 +87,16 @@ export function AdminSidebar() {
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    'group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition-all',
                     isActive
-                      ? 'bg-[#ea2a33]/20 text-[#ea2a33] border border-[#ea2a33]/30'
-                      : 'text-white/60 hover:bg-white/5 hover:text-white'
+                      ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
+                      : 'text-text-muted hover:bg-gray-50 hover:text-text-dark'
                   )}
                 >
                   <item.icon
                     className={cn(
-                      'h-5 w-5 shrink-0',
-                      isActive ? 'text-[#ea2a33]' : 'text-white/40 group-hover:text-white/60'
+                      'h-5 w-5 shrink-0 transition-transform group-hover:scale-110',
+                      isActive ? 'text-primary' : 'text-gray-400 group-hover:text-text-dark'
                     )}
                   />
                   {item.name}

@@ -47,7 +47,7 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-[#1A1A1A]"
+            className="block text-xs font-black uppercase tracking-widest text-[#666666] mb-2 ml-4"
           >
             Correo Electrónico
           </label>
@@ -59,7 +59,7 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
+            className="block w-full rounded-full bg-gray-50 border border-gray-100 px-6 py-4 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all"
             placeholder="tu@email.com"
           />
         </div>
@@ -67,7 +67,7 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-[#1A1A1A]"
+            className="block text-xs font-black uppercase tracking-widest text-[#666666] mb-2 ml-4"
           >
             Contraseña
           </label>
@@ -79,15 +79,15 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
+            className="block w-full rounded-full bg-gray-50 border border-gray-100 px-6 py-4 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all"
             placeholder="••••••••"
           />
         </div>
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-4">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="rounded-2xl bg-red-50 border border-red-100 p-4">
+          <p className="text-sm text-red-600 font-medium">{error}</p>
         </div>
       )}
 
@@ -95,11 +95,11 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4CAF50] hover:bg-[#3d8b40] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-[#4CAF50] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="group w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-full shadow-lg text-lg font-black text-white bg-[#4CAF50] hover:bg-[#3d8b40] hover:-translate-y-0.5 active:scale-95 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           {loading ? (
             <>
-              <Loader2 className="animate-spin h-4 w-4 mr-2" />
+              <Loader2 className="animate-spin h-5 w-5 mr-2" />
               Iniciando sesión...
             </>
           ) : (
@@ -109,10 +109,10 @@ export function LoginForm({ returnUrl }: LoginFormProps) {
       </div>
 
       <div className="text-center text-sm">
-        <span className="text-[#666666]">¿No tienes cuenta? </span>
+        <span className="text-[#666666] font-medium">¿No tienes cuenta? </span>
         <Link
           href="/auth/signup"
-          className="font-medium text-[#4CAF50] hover:text-[#3d8b40] transition-colors"
+          className="font-black text-[#4CAF50] hover:text-[#3d8b40] transition-colors"
         >
           Regístrate aquí
         </Link>

@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import { getWalletTransactions, getDashboardStats } from '@/app/actions/dashboard'
 import { DollarSign, ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { WithdrawalButton } from '@/components/dashboard/withdrawal-button'
+import { cn } from '@/lib/utils'
 
 export default async function WalletPage() {
   const supabase = await createClient()
@@ -58,155 +59,164 @@ export default async function WalletPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Billetera</h1>
-          <p className="mt-1 text-sm text-white/60">
-            Gestiona tus ganancias y retiros
+          <div className="flex items-center gap-2 mb-2">
+            <span className="h-1 w-8 bg-primary rounded-full"></span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">MIS FINANZAS</span>
+          </div>
+          <h1 className="text-4xl font-black text-text-dark tracking-tighter">Tu Billetera</h1>
+          <p className="mt-2 text-text-muted font-medium">
+            Control total de tus comisiones y retiros automatizados
           </p>
         </div>
         <WithdrawalButton currentBalance={stats.currentBalance} />
       </div>
 
       {/* Balance Card */}
-      <div className="overflow-hidden rounded-xl bg-gradient-to-br from-[#ea2a33] to-[#d11a23] shadow-lg">
-        <div className="p-6 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-90">Balance Disponible</p>
-              <p className="mt-1 text-3xl font-bold">
-                $
+      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-[3rem] relative p-12 group">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/5 to-transparent -skew-x-12 translate-x-1/3 group-hover:translate-x-0 transition-transform duration-1000"></div>
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 relative z-10">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="size-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
+                <DollarSign className="size-6" />
+              </div>
+              <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">Disponible para retiro</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm font-black text-primary">S/</span>
+              <span className="text-6xl font-black text-text-dark tracking-tighter">
                 {Number(stats.currentBalance).toLocaleString('es-PE', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-              </p>
+              </span>
             </div>
-            <div className="rounded-full bg-white/20 p-4">
-              <DollarSign className="h-8 w-8" />
+          </div>
+
+          <div className="flex flex-col items-end gap-2">
+            <div className="h-2 w-32 bg-gray-50 rounded-full overflow-hidden">
+              <div className="h-full bg-primary w-2/3"></div>
             </div>
+            <p className="text-[10px] font-black text-primary uppercase tracking-widest">Nivel de Actividad: Alto</p>
           </div>
         </div>
       </div>
 
       {/* Transactions Table */}
-      <div className="overflow-hidden rounded-xl bg-white/5 border border-white/10 shadow-lg backdrop-blur-sm">
-        <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg font-medium leading-6 text-white">
-            Historial de Transacciones
-          </h3>
-          <p className="mt-1 max-w-2xl text-sm text-white/60">
-            Todas tus transacciones de comisiones, compras y retiros
-          </p>
+      <div className="bg-white border border-gray-100 shadow-sm rounded-[2.5rem] overflow-hidden">
+        <div className="px-10 py-8 border-b border-gray-50 flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-black text-text-dark tracking-tight">
+              Historial de Movimientos
+            </h3>
+            <p className="mt-1 text-sm text-text-muted font-medium">
+              Detalle chronológico de comisiones y egresos
+            </p>
+          </div>
         </div>
-        <div className="border-t border-white/10">
-          {transactions.length === 0 ? (
-            <div className="px-4 py-12 text-center sm:px-6">
-              <DollarSign className="mx-auto h-12 w-12 text-white/40" />
-              <h3 className="mt-2 text-sm font-medium text-white">
-                No hay transacciones aún
-              </h3>
-              <p className="mt-1 text-sm text-white/60">
-                Tus transacciones aparecerán aquí cuando comiences a ganar
-                comisiones
-              </p>
+
+        {transactions.length === 0 ? (
+          <div className="px-10 py-20 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gray-50/50 -z-10"></div>
+            <div className="mx-auto h-20 w-20 bg-white rounded-3xl shadow-inner flex items-center justify-center mb-6">
+              <DollarSign className="h-10 w-10 text-gray-200" />
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-white/10">
-                <thead className="bg-white/5">
-                  <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60"
-                    >
-                      Fecha
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60"
-                    >
-                      Tipo
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/60"
-                    >
-                      Descripción
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-white/60"
-                    >
-                      Monto
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-white/60"
-                    >
-                      Balance
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10 bg-white/5">
-                  {transactions.map((transaction: any) => {
-                    const isPositive = Number(transaction.amount) > 0
-                    return (
-                      <tr key={transaction.id} className="hover:bg-white/10 transition-colors">
-                        <td className="whitespace-nowrap px-6 py-4 text-sm text-white/60">
-                          {formatDate(transaction.created_at)}
-                        </td>
-                        <td className="whitespace-nowrap px-6 py-4">
-                          <div className="flex items-center gap-2">
+            <h3 className="text-2xl font-black text-text-dark tracking-tight">
+              Aún no tienes movimientos
+            </h3>
+            <p className="mt-2 text-text-muted font-medium">
+              Comienza a construir tu red para ver tus ganancias aquí
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-50">
+              <thead className="bg-gray-50/50">
+                <tr>
+                  <th className="px-10 py-5 text-left text-xs font-black uppercase tracking-[0.2em] text-text-muted">
+                    Fecha y Hora
+                  </th>
+                  <th className="px-10 py-5 text-left text-xs font-black uppercase tracking-[0.2em] text-text-muted">
+                    Tipo de Operación
+                  </th>
+                  <th className="px-10 py-5 text-left text-xs font-black uppercase tracking-[0.2em] text-text-muted">
+                    Descripción
+                  </th>
+                  <th className="px-10 py-5 text-right text-xs font-black uppercase tracking-[0.2em] text-text-muted">
+                    Monto
+                  </th>
+                  <th className="px-10 py-5 text-right text-xs font-black uppercase tracking-[0.2em] text-text-muted">
+                    Nuevo Saldo
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {transactions.map((transaction: any) => {
+                  const isPositive = Number(transaction.amount) > 0
+                  return (
+                    <tr key={transaction.id} className="hover:bg-gray-50/50 transition-colors group">
+                      <td className="px-10 py-6 whitespace-nowrap text-sm font-bold text-text-muted">
+                        {formatDate(transaction.created_at)}
+                      </td>
+                      <td className="px-10 py-6 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className={cn(
+                            "size-8 rounded-xl flex items-center justify-center shadow-sm",
+                            isPositive ? "bg-primary/10 text-primary" : "bg-red-50 text-red-500"
+                          )}>
                             {getTransactionIcon(transaction.transaction_type)}
-                            <span className="text-sm text-white">
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-black text-text-dark group-hover:text-primary transition-colors tracking-tight">
                               {getTransactionLabel(transaction.transaction_type)}
                             </span>
                             {transaction.commission_level && (
-                              <span className="rounded bg-[#ea2a33]/20 text-[#ea2a33] px-2 py-0.5 text-xs font-medium border border-[#ea2a33]/30">
-                                Nivel {transaction.commission_level}
+                              <span className="text-[9px] font-black text-text-muted uppercase tracking-widest">
+                                Nivel {transaction.commission_level} aliado
                               </span>
                             )}
                           </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-white/60">
-                          {transaction.description || '-'}
-                        </td>
-                        <td
-                          className={`whitespace-nowrap px-6 py-4 text-right text-sm font-medium ${
-                            isPositive ? 'text-[#4CAF50]' : 'text-[#ea2a33]'
-                          }`}
-                        >
-                          {isPositive ? '+' : ''}
-                          $
-                          {Math.abs(Number(transaction.amount)).toLocaleString(
-                            'es-PE',
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}
-                        </td>
-                        <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-white/60">
-                          $
-                          {Number(transaction.balance_after).toLocaleString(
-                            'es-PE',
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                        </div>
+                      </td>
+                      <td className="px-10 py-6 text-sm font-medium text-text-dark/70">
+                        {transaction.description || '-'}
+                      </td>
+                      <td
+                        className={cn(
+                          "px-10 py-6 whitespace-nowrap text-right text-sm font-black tracking-tight",
+                          isPositive ? 'text-primary' : 'text-red-500'
+                        )}
+                      >
+                        {isPositive ? '+' : ''}
+                        S/ {Math.abs(Number(transaction.amount)).toLocaleString(
+                          'es-PE',
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}
+                      </td>
+                      <td className="px-10 py-6 whitespace-nowrap text-right text-sm font-bold text-text-dark">
+                        S/ {Number(transaction.balance_after).toLocaleString(
+                          'es-PE',
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )

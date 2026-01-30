@@ -3,6 +3,7 @@
 import { Copy, CheckCircle2, Mail, User, CreditCard, Calendar, Shield } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 interface AccountInfoSectionProps {
   user: any
@@ -35,180 +36,148 @@ export function AccountInfoSection({ user, profile }: AccountInfoSectionProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <div>
-        <h2 className="text-lg font-medium text-gray-900">Información de Cuenta</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Información de tu cuenta (solo lectura). Contacta al administrador para cambiar nombre, DNI o correo.
+        <h2 className="text-xl font-black text-text-dark tracking-tight">Información de Seguridad</h2>
+        <p className="mt-1 text-sm text-text-muted font-medium">
+          Datos sensibles de identidad y cuenta. Para cambios contacte a soporte central.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Email */}
-        <div className="rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Mail className="h-5 w-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium text-gray-500">Correo Electrónico</p>
-                <p className="text-sm text-gray-900">{user?.email || 'N/A'}</p>
-              </div>
+        <div className="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm group hover:border-primary/20 transition-all">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="size-10 rounded-xl bg-gray-50 flex items-center justify-center text-text-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <Mail size={18} />
             </div>
-            <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-              Solo Admin
-            </span>
+            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Correo Principal</span>
+          </div>
+          <p className="text-sm font-bold text-text-dark break-all">{user?.email || 'N/A'}</p>
+          <div className="mt-4 flex items-center gap-2">
+            <span className="size-2 bg-yellow-400 rounded-full animate-pulse"></span>
+            <span className="text-[9px] font-black text-yellow-600 uppercase tracking-widest">Inmutable</span>
           </div>
         </div>
 
         {/* Nombre */}
-        <div className="rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium text-gray-500">Nombre Completo</p>
-                <p className="text-sm text-gray-900">{profile?.public_name || 'No especificado'}</p>
-              </div>
+        <div className="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm group hover:border-primary/20 transition-all">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="size-10 rounded-xl bg-gray-50 flex items-center justify-center text-text-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <User size={18} />
             </div>
-            <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-              Solo Admin
-            </span>
+            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Titular</span>
+          </div>
+          <p className="text-sm font-bold text-text-dark">{profile?.public_name || 'No especificado'}</p>
+          <div className="mt-4 flex items-center gap-2">
+            <span className="size-2 bg-yellow-400 rounded-full animate-pulse"></span>
+            <span className="text-[9px] font-black text-yellow-600 uppercase tracking-widest">Verificado</span>
           </div>
         </div>
 
         {/* DNI */}
-        <div className="rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <CreditCard className="h-5 w-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium text-gray-500">DNI</p>
-                <p className="text-sm text-gray-900">{profile?.dni || 'No especificado'}</p>
-              </div>
+        <div className="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm group hover:border-primary/20 transition-all">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="size-10 rounded-xl bg-gray-50 flex items-center justify-center text-text-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <CreditCard size={18} />
             </div>
-            <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-              Solo Admin
-            </span>
+            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Documento ID</span>
           </div>
-        </div>
-
-        {/* Código de Referido */}
-        <div className="rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-500 mb-1">Código de Referido</p>
-              <p className="text-sm font-mono text-gray-900">{profile?.referral_code || 'N/A'}</p>
-            </div>
-            <button
-              onClick={() => copyToClipboard(profile?.referral_code || '', 'referral_code')}
-              className="ml-4 rounded-md p-2 text-gray-400 hover:text-gray-600"
-              title="Copiar código"
-            >
-              {copiedField === 'referral_code' ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
-              ) : (
-                <Copy className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Link de Referido */}
-        <div className="rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-500 mb-1">Link de Referido</p>
-              <p className="text-sm text-gray-900 truncate">{getReferralLink()}</p>
-            </div>
-            <button
-              onClick={() => copyToClipboard(getReferralLink(), 'referral_link')}
-              className="ml-4 rounded-md p-2 text-gray-400 hover:text-gray-600 flex-shrink-0"
-              title="Copiar link"
-            >
-              {copiedField === 'referral_link' ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
-              ) : (
-                <Copy className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Sponsor */}
-        {profile?.sponsor_id && (
-          <div className="rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium text-gray-500">Patrocinador / Líder</p>
-                <p className="text-sm text-gray-900">
-                  {profile?.sponsor?.public_name || profile?.sponsor?.email || 'Patrocinador'}
-                  {profile?.sponsor?.referral_code && (
-                    <span className="text-xs text-gray-500 ml-2">
-                      ({profile.sponsor.referral_code})
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Fecha de Registro */}
-        <div className="rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-gray-400" />
-            <div>
-              <p className="text-sm font-medium text-gray-500">Fecha de Registro</p>
-              <p className="text-sm text-gray-900">
-                {profile?.created_at ? formatDate(profile.created_at) : 'N/A'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Estado de Cuenta */}
-        <div className="rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Shield className="h-5 w-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium text-gray-500">Estado de Cuenta</p>
-                <p className="text-sm text-gray-900">
-                  {profile?.is_active ? 'Activa' : 'Inactiva'}
-                </p>
-              </div>
-            </div>
-            {profile?.is_active ? (
-              <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                Activa
-              </span>
-            ) : (
-              <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
-                Inactiva
-              </span>
-            )}
+          <p className="text-sm font-bold text-text-dark">{profile?.dni || 'No especificado'}</p>
+          <div className="mt-4 flex items-center gap-2">
+            <span className="size-2 bg-yellow-400 rounded-full animate-pulse"></span>
+            <span className="text-[9px] font-black text-yellow-600 uppercase tracking-widest">KYC Aprobado</span>
           </div>
         </div>
       </div>
 
-      {/* Nota sobre cambios */}
-      <div className="rounded-md bg-yellow-50 p-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <Shield className="h-5 w-5 text-yellow-400" />
+      {/* Referidos info and Link */}
+      <div className="bg-gray-50/50 rounded-[2.5rem] border border-gray-100 p-10 space-y-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex-1 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="size-2 bg-primary rounded-full"></div>
+              <h3 className="text-xs font-black text-text-dark uppercase tracking-widest">Tu Enlace de Crecimiento</h3>
+            </div>
+            <div className="flex items-center gap-4 bg-white border border-gray-100 rounded-full pl-6 pr-2 py-2">
+              <p className="text-xs font-bold text-text-muted truncate flex-1">{getReferralLink()}</p>
+              <button
+                onClick={() => copyToClipboard(getReferralLink(), 'referral_link')}
+                className="size-10 rounded-full bg-primary text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+              >
+                {copiedField === 'referral_link' ? <CheckCircle2 size={16} /> : <Copy size={16} />}
+              </button>
+            </div>
           </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-yellow-800">
-              ¿Necesitas cambiar tu nombre, DNI o correo?
-            </h3>
-            <div className="mt-2 text-sm text-yellow-700">
-              <p>
-                Por seguridad, estos datos solo pueden ser modificados por un administrador.
-                Contacta a soporte para solicitar cambios.
+
+          <div className="flex-1 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="size-2 bg-gold rounded-full"></div>
+              <h3 className="text-xs font-black text-text-dark uppercase tracking-widest">Tu Código Único</h3>
+            </div>
+            <div className="flex items-center gap-4 bg-white border border-gray-100 rounded-full pl-6 pr-2 py-2">
+              <p className="text-xs font-black text-primary tracking-[0.2em] flex-1">{profile?.referral_code || '---'}</p>
+              <button
+                onClick={() => copyToClipboard(profile?.referral_code || '', 'referral_code')}
+                className="size-10 rounded-full bg-gold text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-gold/20"
+              >
+                {copiedField === 'referral_code' ? <CheckCircle2 size={16} /> : <Copy size={16} />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Sponsor & Dates */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-gray-100">
+          <div className="flex items-center gap-5">
+            <div className="size-14 rounded-2xl bg-white shadow-sm flex items-center justify-center">
+              <Shield className="size-7 text-primary/40" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Liderazgo</p>
+              <p className="text-sm font-bold text-text-dark">
+                {profile?.sponsor?.public_name || profile?.sponsor?.email || 'Sistema Central'}
+                {profile?.sponsor?.referral_code && <span className="text-primary ml-2 font-black">[{profile.sponsor.referral_code}]</span>}
               </p>
             </div>
           </div>
+
+          <div className="flex items-center gap-5">
+            <div className="size-14 rounded-2xl bg-white shadow-sm flex items-center justify-center">
+              <Calendar className="size-7 text-text-muted/30" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Antiguedad</p>
+              <p className="text-sm font-bold text-text-dark">
+                {profile?.created_at ? formatDate(profile.created_at) : 'Desde el inicio'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Account Status Alert */}
+      <div className={cn(
+        "rounded-[2rem] p-8 flex items-center justify-between gap-6",
+        profile?.is_active ? "bg-primary/5 border border-primary/10" : "bg-red-50 border border-red-100"
+      )}>
+        <div className="flex items-center gap-6">
+          <div className={cn(
+            "size-14 rounded-full flex items-center justify-center shadow-lg",
+            profile?.is_active ? "bg-primary text-white" : "bg-red-500 text-white"
+          )}>
+            <Shield className="size-7" />
+          </div>
+          <div>
+            <h4 className="text-lg font-black text-text-dark tracking-tight">Estado de la Membresía</h4>
+            <p className="text-sm font-medium text-text-muted">Tu cuenta se encuentra actualmente {profile?.is_active ? 'plenamente operativa' : 'restringida o inactiva'}</p>
+          </div>
+        </div>
+        <div className={cn(
+          "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest",
+          profile?.is_active ? "bg-primary/10 text-primary border border-primary/20" : "bg-red-100 text-red-600 border border-red-200"
+        )}>
+          {profile?.is_active ? 'Cuenta Activa' : 'Acceso Limitado'}
         </div>
       </div>
     </div>

@@ -2,6 +2,19 @@ import { User } from '@supabase/supabase-js'
 import { Database } from '@/types/supabase'
 import { Badge } from '@/components/ui/badge'
 
+const getRankColor = (rank: string) => {
+  switch (rank) {
+    case 'ORO':
+      return 'bg-gold/10 text-gold border-gold/20'
+    case 'PLATA':
+      return 'bg-gray-100 text-gray-400 border-gray-200'
+    case 'BRONCE':
+      return 'bg-red-50 text-red-400 border-red-100'
+    default:
+      return 'bg-gray-50 text-gray-400 border-gray-100'
+  }
+}
+
 type Profile = Database['public']['Tables']['profiles']['Row']
 
 interface DashboardHeaderProps {
@@ -10,37 +23,22 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
-  const getRankColor = (rank: string) => {
-    switch (rank) {
-      case 'ORO':
-        return 'bg-[#FFD700] text-black'
-      case 'PLATA':
-        return 'bg-gray-400 text-black'
-      case 'BRONCE':
-        return 'bg-orange-400 text-black'
-      default:
-        return 'bg-white/10 text-white'
-    }
-  }
-
   return (
-    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-x-4 border-b border-white/10 bg-[#121212]/80 backdrop-blur-md px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 flex h-20 shrink-0 items-center gap-x-4 border-b border-gray-100 bg-white/80 backdrop-blur-xl px-4 sm:gap-x-6 sm:px-6 lg:px-8">
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
         <div className="flex items-center gap-x-4 lg:gap-x-6 flex-1">
           <div className="flex items-center gap-x-4 lg:gap-x-6 ml-auto">
-            <div className="flex items-center gap-x-3">
-              <div className="hidden lg:block text-right">
-                <p className="text-sm font-medium text-white">
+            <div className="flex items-center gap-x-3 group cursor-pointer">
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-black text-text-dark group-hover:text-primary transition-colors tracking-tight">
                   {profile?.public_name || user.email?.split('@')[0]}
                 </p>
-                <Badge
-                  className={getRankColor(profile?.status_level || 'BRONCE')}
-                >
-                  Nivel {profile?.status_level || 'BRONCE'}
-                </Badge>
+                <div className={`mt-0.5 inline-flex items-center px-3 py-0.5 rounded-full text-[8px] font-black tracking-[0.2em] uppercase border ${getRankColor(profile?.status_level || 'BRONCE')}`}>
+                  {profile?.status_level || 'BRONCE'}
+                </div>
               </div>
-              <div className="h-8 w-8 rounded-full bg-[#ea2a33] flex items-center justify-center">
-                <span className="text-sm font-medium text-white">
+              <div className="size-10 rounded-2xl bg-primary text-white flex items-center justify-center font-black shadow-lg shadow-primary/20 transform group-hover:scale-105 transition-transform">
+                <span className="text-sm">
                   {(profile?.public_name || user.email?.[0] || 'U').toUpperCase()}
                 </span>
               </div>

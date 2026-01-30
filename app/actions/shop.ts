@@ -229,7 +229,7 @@ export async function processOrder(
   }
 }
 
-export async function getProducts(category?: string) {
+export async function getProducts(options?: { category?: string; featured?: boolean }) {
   const supabase = await createClient()
 
   let query = supabase
@@ -238,8 +238,12 @@ export async function getProducts(category?: string) {
     .eq('is_active', true)
     .order('created_at', { ascending: false })
 
-  if (category) {
-    query = query.eq('category', category)
+  if (options?.category) {
+    query = query.eq('category', options.category)
+  }
+
+  if (options?.featured) {
+    query = query.eq('is_featured', true)
   }
 
   const { data, error } = await query

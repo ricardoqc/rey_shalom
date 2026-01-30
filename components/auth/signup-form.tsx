@@ -91,7 +91,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
       const userMetadata: Record<string, any> = {
         public_name: publicName || email.split('@')[0],
       }
-      
+
       // Solo agregar referral_code si existe y es válido
       if (referralCode && referralCodeValid) {
         userMetadata.referral_code = referralCode.toUpperCase().trim()
@@ -121,14 +121,14 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-      <div className="space-y-4">
-        <div>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="md:col-span-2">
           <label
             htmlFor="publicName"
-            className="block text-sm font-medium text-[#1A1A1A]"
+            className="block text-xs font-black uppercase tracking-widest text-text-muted mb-2 ml-4"
           >
-            Nombre Público (Opcional)
+            Nombre Público <span className="text-gray-300 font-medium">(Opcional)</span>
           </label>
           <input
             id="publicName"
@@ -136,15 +136,15 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             type="text"
             value={publicName}
             onChange={(e) => setPublicName(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
-            placeholder="Tu nombre público"
+            className="block w-full rounded-full bg-gray-50 border border-gray-100 px-6 py-4 text-text-dark placeholder-gray-400 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+            placeholder="Tu nombre de aliado"
           />
         </div>
 
-        <div>
+        <div className="md:col-span-2">
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-[#1A1A1A]"
+            className="block text-xs font-black uppercase tracking-widest text-text-muted mb-2 ml-4"
           >
             Correo Electrónico
           </label>
@@ -156,19 +156,19 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
-            placeholder="tu@email.com"
+            className="block w-full rounded-full bg-gray-50 border border-gray-100 px-6 py-4 text-text-dark placeholder-gray-400 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+            placeholder="pro@ejemplo.com"
           />
         </div>
 
-        <div>
+        <div className="md:col-span-2">
           <label
             htmlFor="referralCode"
-            className="block text-sm font-medium text-[#1A1A1A]"
+            className="block text-xs font-black uppercase tracking-widest text-text-muted mb-2 ml-4"
           >
-            Código de Patrocinador {referralCodeLocked && '(Pre-llenado)'}
+            Código de Patrocinador {referralCodeLocked && <span className="text-primary font-black ml-2">✓detectado</span>}
           </label>
-          <div className="mt-1 relative">
+          <div className="relative group">
             <input
               id="referralCode"
               name="referralCode"
@@ -176,40 +176,32 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
               value={referralCode}
               onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
               disabled={referralCodeLocked}
-              className={`block w-full rounded-md bg-white/5 border px-3 py-2 text-white placeholder-white/40 shadow-sm focus:outline-none focus:ring-1 ${
-                referralCodeLocked
-                  ? 'bg-white/5 border-white/10 cursor-not-allowed opacity-60'
-                  : 'border-white/10 focus:border-[#ea2a33] focus:ring-[#ea2a33]'
-              } ${
-                referralCodeValid === true
-                  ? 'border-[#4CAF50]'
+              className={`block w-full rounded-full px-6 py-4 text-text-dark font-black tracking-widest placeholder-gray-400 shadow-sm outline-none transition-all border ${referralCodeLocked
+                  ? 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-80'
+                  : 'bg-gray-50 border-gray-100 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary'
+                } ${referralCodeValid === true
+                  ? 'border-primary bg-primary/5'
                   : referralCodeValid === false
-                  ? 'border-[#ea2a33]'
-                  : ''
-              }`}
+                    ? 'border-red-500 bg-red-50'
+                    : ''
+                }`}
               placeholder="ABC123"
             />
             {referralCode && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="absolute right-6 top-1/2 -translate-y-1/2">
                 {validatingCode ? (
                   <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
                 ) : referralCodeValid === true ? (
-                  <CheckCircle2 className="h-5 w-5 text-[#4CAF50]" />
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
                 ) : referralCodeValid === false ? (
                   <XCircle className="h-5 w-5 text-red-500" />
                 ) : null}
               </div>
             )}
           </div>
-          {referralCodeLocked && (
-            <p className="mt-1 text-xs text-white/50">
-              Este código fue detectado automáticamente desde tu enlace de
-              referido
-            </p>
-          )}
           {referralCode && referralCodeValid === false && !validatingCode && (
-            <p className="mt-1 text-xs text-red-500">
-              Código de patrocinador no válido
+            <p className="mt-2 ml-4 text-[10px] font-black uppercase tracking-widest text-red-500">
+              ¡Código no encontrado en el sistema!
             </p>
           )}
         </div>
@@ -217,7 +209,7 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-[#1A1A1A]"
+            className="block text-xs font-black uppercase tracking-widest text-text-muted mb-2 ml-4"
           >
             Contraseña
           </label>
@@ -229,17 +221,17 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
-            placeholder="Mínimo 6 caracteres"
+            className="block w-full rounded-full bg-gray-50 border border-gray-100 px-6 py-4 text-text-dark placeholder-gray-400 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+            placeholder="••••••••"
           />
         </div>
 
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-medium text-[#1A1A1A]"
+            className="block text-xs font-black uppercase tracking-widest text-text-muted mb-2 ml-4"
           >
-            Confirmar Contraseña
+            Confirmar
           </label>
           <input
             id="confirmPassword"
@@ -249,43 +241,33 @@ export function SignupForm({ sponsorRef }: SignupFormProps) {
             required
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md bg-white border border-gray-200 px-3 py-2 text-[#1A1A1A] placeholder-gray-400 shadow-sm focus:border-[#4CAF50] focus:outline-none focus:ring-1 focus:ring-[#4CAF50]"
-            placeholder="Repite tu contraseña"
+            className="block w-full rounded-full bg-gray-50 border border-gray-100 px-6 py-4 text-text-dark placeholder-gray-400 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+            placeholder="••••••••"
           />
         </div>
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-4">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="rounded-2xl bg-red-50 border border-red-100 p-4">
+          <p className="text-sm text-red-600 font-bold">{error}</p>
         </div>
       )}
 
-      <div>
+      <div className="pt-4">
         <button
           type="submit"
           disabled={loading || (referralCode ? referralCodeValid === false : false)}
-          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#ea2a33] hover:bg-[#d11a23] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#121212] focus:ring-[#ea2a33] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="group w-full flex justify-center items-center py-5 px-6 border border-transparent rounded-full shadow-lg text-lg font-black text-white bg-primary hover:bg-[#3d8b40] hover:-translate-y-0.5 active:scale-95 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           {loading ? (
             <>
-              <Loader2 className="animate-spin h-4 w-4 mr-2" />
-              Creando cuenta...
+              <Loader2 className="animate-spin h-5 w-5 mr-3" />
+              Creando tu cuenta...
             </>
           ) : (
-            'Crear Cuenta'
+            'Comenzar Ahora'
           )}
         </button>
-      </div>
-
-      <div className="text-center text-sm">
-        <span className="text-[#666666]">¿Ya tienes cuenta? </span>
-        <Link
-          href="/auth/login"
-          className="font-medium text-[#4CAF50] hover:text-[#3d8b40] transition-colors"
-        >
-          Inicia sesión aquí
-        </Link>
       </div>
     </form>
   )

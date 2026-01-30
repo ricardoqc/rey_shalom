@@ -30,41 +30,47 @@ export default async function AdminDashboardPage() {
     orders?.reduce((sum, order: any) => sum + Number(order.total_amount), 0) || 0
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard General</h1>
-        <p className="mt-1 text-sm text-white/60">
-          Resumen del sistema
-        </p>
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="h-1 w-8 bg-primary rounded-full"></span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">ADMINSTRACIÓN</span>
+          </div>
+          <h1 className="text-4xl font-black text-text-dark tracking-tighter">Dashboard General</h1>
+          <p className="mt-2 text-text-muted font-medium">
+            Resumen operacional del ecosistema Rey Shalom
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Productos Activos"
+          title="Productos"
           value={totalProducts || 0}
           icon={Package}
-          iconColor="text-[#ea2a33]"
+          iconColor="text-primary"
         />
         <StatsCard
-          title="Usuarios Activos"
+          title="Aliados"
           value={totalUsers || 0}
           icon={Users}
-          iconColor="text-[#4CAF50]"
+          iconColor="text-royal-blue"
         />
         <StatsCard
           title="Sucursales"
           value={totalWarehouses || 0}
           icon={Warehouse}
-          iconColor="text-[#FFD700]"
+          iconColor="text-gold"
         />
         <StatsCard
-          title="Ingresos Totales"
-          value={`$${totalRevenue.toLocaleString('es-PE', {
+          title="Ingresos"
+          value={`S/ ${totalRevenue.toLocaleString('es-PE', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}`}
           icon={DollarSign}
-          iconColor="text-[#FFD700]"
+          iconColor="text-primary"
         />
       </div>
     </div>

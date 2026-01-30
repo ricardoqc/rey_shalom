@@ -28,123 +28,144 @@ export default async function DashboardPage() {
   const isAdmin = userRole === 'admin'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Resumen</h1>
-          <p className="mt-1 text-sm text-white/60">
-            Bienvenido a tu oficina virtual
+          <div className="flex items-center gap-2 mb-2">
+            <span className="h-1 w-8 bg-primary rounded-full"></span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">RESUMEN GENERAL</span>
+          </div>
+          <h1 className="text-4xl font-black text-text-dark tracking-tighter">Tu Oficina Virtual</h1>
+          <p className="mt-2 text-text-muted font-medium">
+            Bienvenido de nuevo, <span className="text-primary font-bold">{(stats.profile as any).public_name}</span>. Gestiona tu red y ganancias.
           </p>
         </div>
+
         {isAdmin && (
           <Link
             href="/admin"
-            className="inline-flex items-center gap-2 rounded-md bg-[#ea2a33] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#d11a23] transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-primary rounded-full font-black text-xs uppercase tracking-widest hover:bg-secondary/80 transition-all border border-primary/10"
           >
-            <Shield className="h-5 w-5" />
-            Panel de Administración
+            <Shield className="h-4 w-4" />
+            Panel Control
           </Link>
         )}
       </div>
 
       {/* KPI Cards - Primera fila */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {/* Card combinada de Balance y Ganancias */}
-        <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className={`rounded-md bg-[#4CAF50]/20 p-3`}>
-              <Wallet className="h-6 w-6 text-[#4CAF50]" />
+        <div className="bg-white border border-gray-100 shadow-sm rounded-[2rem] p-8 relative overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div className="absolute left-0 top-0 bottom-0 w-2 bg-primary"></div>
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Balance Global</span>
+              <div className="size-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <Wallet className="h-5 w-5" />
+              </div>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-white/60">Balance y Ganancias</p>
-              <p className="mt-1 text-3xl font-bold text-white">
-                ${stats.currentBalance.toLocaleString('es-PE', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-white/50">
-                  <span className="font-medium text-white/80">
-                    ${stats.monthlyEarnings.toLocaleString('es-PE', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>{' '}
-                  ganancias del mes
-                </p>
-                <p className="text-xs text-white/50">
-                  <span className="font-medium text-white/80">
-                    ${stats.referralsEarnings.toLocaleString('es-PE', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>{' '}
-                  ganancias de referidos
-                </p>
+            <p className="text-3xl font-black text-text-dark tracking-tighter">
+              S/ {stats.currentBalance.toLocaleString('es-PE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </p>
+            <div className="mt-6 pt-6 border-t border-gray-50 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-black text-text-muted uppercase tracking-wider">Este Mes</span>
+                <span className="text-xs font-black text-primary">
+                  S/ {stats.monthlyEarnings.toLocaleString('es-PE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-black text-text-muted uppercase tracking-wider">Referidos</span>
+                <span className="text-xs font-black text-gold">
+                  S/ {stats.referralsEarnings.toLocaleString('es-PE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </div>
             </div>
           </div>
         </div>
+
         {/* Card combinada de Puntos */}
-        <div className="rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className={`rounded-md bg-[#FFD700]/20 p-3`}>
-              <Star className="h-6 w-6 text-[#FFD700]" />
+        <div className="bg-white border border-gray-100 shadow-sm rounded-[2rem] p-8 relative overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div className="absolute left-0 top-0 bottom-0 w-2 bg-gold"></div>
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Mis Puntos</span>
+              <div className="size-10 rounded-2xl bg-gold/10 flex items-center justify-center text-gold">
+                <Star className="h-5 w-5" />
+              </div>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-white/60">Puntos</p>
-              <p className="mt-1 text-3xl font-bold text-white">
-                {(stats.profile as any).total_points_earned || 0}
-              </p>
-              <p className="mt-1 text-xs text-white/50">
-                <span className="font-medium text-white/80">{stats.pointsThisMonth}</span> puntos este mes
-              </p>
+            <p className="text-3xl font-black text-text-dark tracking-tighter">
+              {(stats.profile as any).total_points_earned || 0} <span className="text-sm text-text-muted uppercase">PV</span>
+            </p>
+            <div className="mt-6 pt-6 border-t border-gray-50 flex items-center justify-between">
+              <span className="text-[9px] font-black text-text-muted uppercase tracking-wider">Acumulados este mes</span>
+              <span className="text-xs font-black text-gold">{stats.pointsThisMonth}</span>
             </div>
           </div>
         </div>
+
         <StatsCard
           title="Rango Actual"
           value={(stats.profile as any).status_level || 'BRONCE'}
           icon={Award}
-          iconColor="text-[#FFD700]"
+          iconColor="text-royal-blue"
         />
         <StatsCard
-          title="Afiliados Directos"
+          title="Aliados Directos"
           value={stats.directAffiliates}
           icon={Users}
-          iconColor="text-[#4CAF50]"
+          iconColor="text-primary"
         />
       </div>
 
       {/* KPI Cards - Segunda fila */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Link href={`/store/${(stats.profile as any).referral_code}`} target="_blank">
-          <div className="rounded-xl bg-white/5 border-2 border-dashed border-white/20 p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:border-[#ea2a33]/50 backdrop-blur-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-white/60">Mi Tienda</p>
-                <p className="mt-2 text-2xl font-semibold text-white">Personalizada</p>
+          <div className="premium-card p-10 group relative overflow-hidden">
+            <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-primary/5 -skew-x-12 translate-x-1/2 group-hover:translate-x-0 transition-transform duration-700"></div>
+            <div className="flex items-center justify-between relative z-10">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+                  <span className="size-1.5 rounded-full bg-primary animate-pulse"></span>
+                  <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">En Línea</span>
+                </div>
+                <div>
+                  <h3 className="text-3xl font-black text-text-dark tracking-tighter">Mi Tienda Rey Shalom</h3>
+                  <p className="text-text-muted font-medium mt-1">Tu escaparate personalizado listo para vender</p>
+                </div>
+                <div className="flex items-center gap-2 text-primary group-hover:gap-4 transition-all">
+                  <span className="text-xs font-black uppercase tracking-widest">Ver Catálogo</span>
+                  <ExternalLink className="h-4 w-4" />
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-[#ea2a33]">
-                <Store className="h-8 w-8" />
-                <ExternalLink className="h-4 w-4" />
+              <div className="hidden sm:flex size-24 rounded-3xl bg-white shadow-2xl border border-gray-50 items-center justify-center text-primary transform rotate-6 group-hover:rotate-0 transition-transform duration-500">
+                <Store className="h-10 w-10" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-white/50">Ver mi tienda personalizada</p>
           </div>
         </Link>
+
+        {/* Referral Link Redesigned Placeholder - Will be the ReferralLink component */}
+        <ReferralLink referralCode={(stats.profile as any).referral_code} />
       </div>
 
       {/* Gamificación - Barra de Progreso */}
-      <RankProgress
-        profile={stats.profile}
-        rankRequirements={stats.rankRequirements}
-      />
-
-      {/* Herramienta de Marketing - Link de Referido */}
-      <ReferralLink referralCode={(stats.profile as any).referral_code} />
+      <div className="max-w-4xl mx-auto">
+        <RankProgress
+          profile={stats.profile}
+          rankRequirements={stats.rankRequirements}
+        />
+      </div>
     </div>
   )
 }

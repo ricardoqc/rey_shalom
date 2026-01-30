@@ -40,119 +40,120 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <div>
-        <h2 className="text-lg font-medium text-white">Datos de Contacto y Dirección</h2>
-        <p className="mt-1 text-sm text-white/60">
-          Actualiza tu información de contacto y dirección de envío
+        <h2 className="text-xl font-black text-text-dark tracking-tight">Datos de Contacto y Dirección</h2>
+        <p className="mt-1 text-sm text-text-muted font-medium">
+          Actualiza tu información de contacto y dirección para envíos y bonificaciones
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Teléfono */}
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-white">
-            Teléfono
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
-            placeholder="+51 987 654 321"
-          />
+      <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Teléfono */}
+          <div className="space-y-2">
+            <label htmlFor="phone" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+              Teléfono Principal
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="block w-full rounded-full bg-gray-50 border-gray-100 text-text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold"
+              placeholder="+51 987 654 321"
+            />
+          </div>
+
+          {/* WhatsApp */}
+          <div className="space-y-2">
+            <label htmlFor="whatsapp_number" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+              Número de WhatsApp
+            </label>
+            <input
+              type="tel"
+              id="whatsapp_number"
+              value={formData.whatsapp_number}
+              onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
+              className="block w-full rounded-full bg-gray-50 border-gray-100 text-text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold"
+              placeholder="+51 987 654 321"
+            />
+          </div>
         </div>
 
-        {/* WhatsApp */}
-        <div>
-          <label htmlFor="whatsapp_number" className="block text-sm font-medium text-white">
-            Número de WhatsApp
-          </label>
-          <input
-            type="tel"
-            id="whatsapp_number"
-            value={formData.whatsapp_number}
-            onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
-            placeholder="+51 987 654 321"
-          />
-          <p className="mt-1 text-xs text-white/50">
-            Formato: +51 987 654 321 (incluye código de país)
-          </p>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Tipo de WhatsApp */}
+          <div className="space-y-2">
+            <label htmlFor="whatsapp_type" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+              Tipo de Cuenta WhatsApp
+            </label>
+            <select
+              id="whatsapp_type"
+              value={formData.whatsapp_type}
+              onChange={(e) => setFormData({ ...formData, whatsapp_type: e.target.value as 'personal' | 'business' })}
+              className="block w-full rounded-full bg-gray-50 border-gray-100 text-text-dark focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold appearance-none cursor-pointer"
+            >
+              <option value="personal">Cuenta Personal</option>
+              <option value="business">Cuenta Business</option>
+            </select>
+          </div>
 
-        {/* Tipo de WhatsApp */}
-        <div>
-          <label htmlFor="whatsapp_type" className="block text-sm font-medium text-white">
-            Tipo de WhatsApp
-          </label>
-          <select
-            id="whatsapp_type"
-            value={formData.whatsapp_type}
-            onChange={(e) => setFormData({ ...formData, whatsapp_type: e.target.value as 'personal' | 'business' })}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
-          >
-            <option value="personal">Personal</option>
-            <option value="business">Business</option>
-          </select>
+          {/* País */}
+          <div className="space-y-2">
+            <label htmlFor="country" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+              País de Residencia
+            </label>
+            <input
+              type="text"
+              id="country"
+              value={formData.country}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+              className="block w-full rounded-full bg-gray-50 border-gray-100 text-text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold"
+              placeholder="Perú"
+            />
+          </div>
         </div>
 
         {/* Dirección */}
-        <div>
-          <label htmlFor="address" className="block text-sm font-medium text-white">
-            Dirección
+        <div className="space-y-2">
+          <label htmlFor="address" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+            Dirección Completa
           </label>
           <textarea
             id="address"
             rows={3}
             value={formData.address}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
-            placeholder="Calle, número, referencia"
+            className="block w-full rounded-3xl bg-gray-50 border-gray-100 text-text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold"
+            placeholder="Calle, número, urbanización, referencia..."
           />
         </div>
 
         {/* Ciudad */}
-        <div>
-          <label htmlFor="city" className="block text-sm font-medium text-white">
-            Ciudad
+        <div className="space-y-2">
+          <label htmlFor="city" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+            Ciudad / Distrito
           </label>
           <input
             type="text"
             id="city"
             value={formData.city}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
+            className="block w-full rounded-full bg-gray-50 border-gray-100 text-text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold"
             placeholder="Lima"
           />
         </div>
 
-        {/* País */}
-        <div>
-          <label htmlFor="country" className="block text-sm font-medium text-white">
-            País
-          </label>
-          <input
-            type="text"
-            id="country"
-            value={formData.country}
-            onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-            className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 text-white placeholder-white/40 shadow-sm focus:border-[#ea2a33] focus:ring-[#ea2a33] sm:text-sm"
-            placeholder="Perú"
-          />
-        </div>
-
-        <div className="flex justify-end">
+        <div className="pt-4 flex justify-end">
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-md bg-[#ea2a33] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#d11a23] focus:outline-none focus:ring-2 focus:ring-[#ea2a33] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-10 py-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Guardando...
+                Actualizando...
               </>
             ) : (
               <>

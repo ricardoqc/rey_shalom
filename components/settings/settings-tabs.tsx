@@ -36,10 +36,10 @@ export function SettingsTabs({
   const [activeTab, setActiveTab] = useState('profile')
 
   return (
-    <div className="bg-white/5 border border-white/10 shadow-lg rounded-xl backdrop-blur-sm">
+    <div className="bg-transparent">
       {/* Tabs Navigation */}
-      <div className="border-b border-white/10">
-        <nav className="flex -mb-px overflow-x-auto" aria-label="Tabs">
+      <div className="px-10 py-2 bg-gray-50/50 border-b border-gray-100">
+        <nav className="flex gap-4 overflow-x-auto scrollbar-hide py-3" aria-label="Tabs">
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -48,16 +48,15 @@ export function SettingsTabs({
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap
-                  ${
-                    isActive
-                      ? 'border-[#ea2a33] text-[#ea2a33]'
-                      : 'border-transparent text-white/60 hover:text-white hover:border-white/30'
+                  flex items-center gap-3 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2
+                  ${isActive
+                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                    : 'bg-white border-gray-100 text-text-muted hover:border-gray-200 hover:text-text-dark shadow-sm'
                   }
                 `}
               >
-                <Icon className="h-5 w-5" />
-                <span className="hidden sm:inline">{tab.name}</span>
+                <Icon className="h-4 w-4" />
+                {tab.name}
               </button>
             )
           })}
@@ -65,7 +64,7 @@ export function SettingsTabs({
       </div>
 
       {/* Tab Content */}
-      <div className="p-6">
+      <div className="p-10">
         {activeTab === 'profile' && (
           <ProfileSection profile={profile} />
         )}

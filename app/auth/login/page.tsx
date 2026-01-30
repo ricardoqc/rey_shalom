@@ -21,36 +21,47 @@ export default async function LoginPage({
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4 py-12 pt-24">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="size-8 text-[#4CAF50]">
-              <svg fill="currentColor" viewBox="0 0 48 48">
-                <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
-              </svg>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#f8fafc] px-4 py-12">
+      <div className="w-full max-w-lg">
+        <div className="text-center mb-10">
+          <div className="flex flex-col items-center justify-center gap-4 mb-8">
+            <div className="size-20 bg-white rounded-3xl shadow-xl shadow-primary/10 flex items-center justify-center p-4 border border-gray-50 transform -rotate-6 hover:rotate-0 transition-transform duration-500">
+              <img
+                alt="Logo"
+                className="h-full w-auto object-contain"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXQ-Ub8KSIvLy27nHLJZtQ1yr4qDoJ7uWIZW9XYPVS7-24K8Lvp-CaJFuVoFdrhtm0yzG0cEqUnSHXq2zNQmtADNQJlz1woQyaVGrv74tD94GdCTGoYsMC4rS3HCXkMiKZPA_cneii2TdCWE8mni7BNuzl4c8mrDOnzPDmM1EWZ-FFrufnRA5WLv514jVeLpPVm-l-R-Brcu9vc2OB9rUElkjNa8rT7SQRYGvuzRgExl3kcztXv0lpyfRvdUhJ_lWDm13XanGF51s"
+              />
             </div>
-            <h2 className="text-3xl font-black tracking-tighter uppercase italic text-[#4CAF50]">
-              Rey Shalom
-            </h2>
+            <div>
+              <span className="block text-2xl font-black leading-none tracking-tighter text-primary italic uppercase">Rey Shalom</span>
+              <span className="text-[10px] font-bold text-gray-400 tracking-[0.4em] uppercase mt-1">Oficina Virtual</span>
+            </div>
           </div>
-          <h2 className="text-3xl font-bold text-[#1A1A1A]">
-            Iniciar Sesión
-          </h2>
-          <p className="mt-2 text-sm text-[#666666]">
-            Accede a tu oficina virtual
+          <h1 className="text-4xl font-black text-text-dark tracking-tighter mb-2">
+            ¡Bienvenido de nuevo!
+          </h1>
+          <p className="text-text-muted font-medium">
+            Ingresa tus credenciales para acceder al panel administrativo
           </p>
         </div>
 
-        <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
+        <div className="bg-white border border-gray-100 rounded-[3rem] p-12 shadow-2xl shadow-primary/5 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-gold to-primary"></div>
           <LoginForm returnUrl={params.returnUrl} />
         </div>
 
         {params.message && (
-          <div className="rounded-md bg-[#4CAF50]/10 border border-[#4CAF50]/20 p-4">
-            <p className="text-sm text-[#4CAF50]">{params.message}</p>
+          <div className="mt-8 rounded-2xl bg-primary/5 border border-primary/10 p-4 flex items-center gap-3">
+            <div className="size-2 rounded-full bg-primary animate-pulse"></div>
+            <p className="text-sm text-primary font-bold">{params.message}</p>
           </div>
         )}
+
+        <div className="mt-12 text-center">
+          <p className="text-sm text-text-muted font-medium">
+            ¿No tienes una cuenta? <span className="text-primary font-black hover:underline cursor-pointer">Contacta a tu administrador</span>
+          </p>
+        </div>
       </div>
     </div>
   )

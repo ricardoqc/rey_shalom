@@ -42,12 +42,13 @@ export function DeleteProductButton({
     <button
       onClick={handleDelete}
       disabled={loading}
-      className="text-red-600 hover:text-red-900 disabled:opacity-50"
+      className="p-2 text-text-muted hover:text-red-500 hover:bg-red-50 rounded-xl transition-all disabled:opacity-50"
+      title="Eliminar producto"
     >
       {loading ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
+        <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
-        <Trash2 className="h-4 w-4" />
+        <Trash2 className="h-5 w-5" />
       )}
     </button>
   )

@@ -24,12 +24,18 @@ export default async function InventoryPage() {
     .select('*, products(name, sku), warehouses(name)')
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Gestión de Inventario</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Administra el stock de productos en cada sucursal
-        </p>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="h-1 w-8 bg-gold rounded-full"></span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gold">LOGÍSTICA</span>
+          </div>
+          <h1 className="text-4xl font-black text-text-dark tracking-tighter">Gestión de Inventario</h1>
+          <p className="mt-2 text-text-muted font-medium">
+            Control de existencias y movimientos entre sucursales
+          </p>
+        </div>
       </div>
 
       <InventoryManager

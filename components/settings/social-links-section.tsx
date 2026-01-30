@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { addSocialLink, updateSocialLink, deleteSocialLink } from '@/app/actions/settings'
 import { toast } from 'sonner'
-import { Loader2, Plus, Trash2, Edit, Check, X, Globe } from 'lucide-react'
+import { Loader2, Plus, Trash2, Edit, Check, X, Globe, Facebook, Share2, MessageCircle } from 'lucide-react'
 
 interface SocialLinksSectionProps {
   socialLinks: any[]
@@ -25,13 +25,8 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState<{
-    platform: 'FACEBOOK' | 'INSTAGRAM' | 'WHATSAPP' | 'TIKTOK' | 'YOUTUBE' | 'LINKEDIN' | 'TWITTER' | 'OTHER'
-    url: string
-    display_name: string
-    is_public: boolean
-  }>({
-    platform: 'FACEBOOK',
+  const [formData, setFormData] = useState({
+    platform: 'FACEBOOK' as 'FACEBOOK' | 'INSTAGRAM' | 'WHATSAPP' | 'TIKTOK' | 'YOUTUBE' | 'LINKEDIN' | 'TWITTER' | 'OTHER',
     url: '',
     display_name: '',
     is_public: true,
@@ -42,7 +37,7 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
     setLoading(true)
 
     try {
-      let result
+      let result: any
       if (editingId) {
         result = await updateSocialLink(editingId, formData)
       } else {
@@ -50,23 +45,33 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
       }
 
       if (result.success) {
-        toast.success(editingId ? 'Red social actualizada' : 'Red social agregada')
+        toast.success(editingId ? 'Enlace actualizado' : 'Enlace agregado')
+        if (result.data) setSocialLinks(result.data)
         setShowForm(false)
         setEditingId(null)
-        setFormData({
-          platform: 'FACEBOOK',
-          url: '',
-          display_name: '',
-          is_public: true,
-        })
-        window.location.reload()
       } else {
-        toast.error(result.error || 'Error al guardar red social')
+        toast.error(result.error || 'Error al guardar enlace')
       }
     } catch (error: any) {
       toast.error(error.message || 'Error inesperado')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('¿Estás seguro de eliminar este enlace?')) return
+
+    try {
+      const result: any = await deleteSocialLink(id)
+      if (result.success) {
+        toast.success('Enlace eliminado')
+        setSocialLinks(socialLinks.filter(l => l.id !== id))
+      } else {
+        toast.error(result.error || 'Error al eliminar enlace')
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error inesperado')
     }
   }
 
@@ -74,36 +79,15 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
     setEditingId(link.id)
     setFormData({
       platform: link.platform,
-      url: link.url || '',
+      url: link.url,
       display_name: link.display_name || '',
-      is_public: link.is_public !== false,
+      is_public: link.is_public,
     })
     setShowForm(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar esta red social?')) {
-      return
-    }
-
-    setLoading(true)
-    try {
-      const result = await deleteSocialLink(id)
-      if (result.success) {
-        toast.success('Red social eliminada')
-        window.location.reload()
-      } else {
-        toast.error(result.error || 'Error al eliminar red social')
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Error inesperado')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getPlatformLabel = (platform: string) => {
-    return platforms.find((p) => p.value === platform)?.label || platform
+  const getPlatformLabel = (value: string) => {
+    return platforms.find((p) => p.value === value)?.label || value
   }
 
   const getCurrentPlaceholder = () => {
@@ -111,12 +95,12 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-lg font-medium text-gray-900">Redes Sociales</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Agrega tus redes sociales para que aparezcan en tu tienda personalizada
+          <h2 className="text-xl font-black text-text-dark tracking-tight">Vínculos de Redes</h2>
+          <p className="mt-1 text-sm text-text-muted font-medium">
+            Conecta tus redes para que tus clientes puedan contactarte directamente
           </p>
         </div>
         {!showForm && (
@@ -131,25 +115,25 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
                 is_public: true,
               })
             }}
-            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:-translate-y-1 transition-all"
           >
             <Plus className="h-4 w-4" />
-            Agregar Red Social
+            Conectar Red
           </button>
         )}
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-lg border border-gray-200 p-6 space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Plataforma *
+        <form onSubmit={handleSubmit} className="bg-gray-50/50 rounded-[2rem] border border-gray-100 p-10 space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+                Plataforma Social *
               </label>
               <select
                 value={formData.platform}
                 onChange={(e) => setFormData({ ...formData, platform: e.target.value as any, url: '' })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                className="block w-full rounded-full bg-white border-gray-100 text-text-dark focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold appearance-none cursor-pointer"
                 required
               >
                 {platforms.map((platform) => (
@@ -160,78 +144,77 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Nombre a Mostrar (Opcional)
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+                Etiqueta Personalizada
               </label>
               <input
                 type="text"
                 value={formData.display_name}
                 onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                placeholder="Ej: Mi Facebook Personal"
+                className="block w-full rounded-full bg-white border-gray-100 text-text-dark placeholder-gray-400 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold"
+                placeholder="Ej: Mi Fanpage, WhatsApp Ventas..."
               />
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">
-                URL o Número *
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-4">
+                URL del Perfil o Número *
               </label>
               <input
                 type="text"
                 value={formData.url}
                 onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                className="block w-full rounded-full bg-white border-gray-100 text-text-dark placeholder-gray-400 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all px-6 py-4 text-sm font-bold"
                 placeholder={getCurrentPlaceholder()}
                 required
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-[9px] font-black text-text-muted uppercase tracking-wider ml-6">
                 {formData.platform === 'WHATSAPP'
-                  ? 'Formato: +51987654321 (incluye código de país)'
-                  : 'Ingresa la URL completa de tu perfil'}
+                  ? 'Usa el formato internacional: +51 987 654 321'
+                  : 'Asegúrate de incluir https:// en el enlace'}
               </p>
             </div>
           </div>
 
-          <div>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={formData.is_public}
-                onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">
-                Mostrar en mi tienda personalizada
-              </span>
+          <div className="flex items-center gap-3 ml-4">
+            <input
+              type="checkbox"
+              id="is_public"
+              checked={formData.is_public}
+              onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
+              className="size-5 rounded border-gray-200 text-primary focus:ring-primary transition-all cursor-pointer"
+            />
+            <label htmlFor="is_public" className="text-sm font-bold text-text-muted cursor-pointer hover:text-text-dark transition-colors">
+              Visible en mi landing page de afiliado
             </label>
           </div>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={() => {
                 setShowForm(false)
                 setEditingId(null)
               }}
-              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-full bg-white border border-gray-200 px-8 py-4 text-xs font-black uppercase tracking-widest text-text-muted hover:text-text-dark hover:border-text-dark transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-10 py-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Guardando...
+                  Publicando...
                 </>
               ) : (
                 <>
                   <Check className="h-4 w-4" />
-                  Guardar
+                  Guardar Conexión
                 </>
               )}
             </button>
@@ -241,46 +224,69 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
 
       {/* Lista de redes sociales */}
       {socialLinks.length === 0 && !showForm ? (
-        <div className="text-center py-12 border border-gray-200 rounded-lg">
-          <Globe className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-sm text-gray-500">No has agregado ninguna red social</p>
+        <div className="text-center py-24 border border-dashed border-gray-200 rounded-[2.5rem] bg-gray-50/30">
+          <div className="size-20 bg-white rounded-3xl shadow-sm flex items-center justify-center mx-auto mb-6">
+            <Globe className="size-8 text-gray-200" />
+          </div>
+          <h3 className="text-xl font-black text-text-dark tracking-tight">Sin redes conectadas</h3>
+          <p className="mt-2 text-text-muted font-medium">Añade tus perfiles para aumentar tu alcance y confianza</p>
         </div>
       ) : (
         !showForm && (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {socialLinks.map((link) => (
               <div
                 key={link.id}
-                className="flex items-center justify-between rounded-lg border border-gray-200 p-4"
+                className="group relative overflow-hidden bg-white rounded-[2rem] border border-gray-100 p-8 hover:shadow-xl hover:border-primary/20 transition-all"
               >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900">
-                      {link.display_name || getPlatformLabel(link.platform)}
-                    </span>
-                    {link.is_public && (
-                      <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-                        Público
-                      </span>
-                    )}
+                <div className="absolute top-0 right-0 size-24 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+
+                <div className="flex items-start justify-between relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-gray-50 flex items-center justify-center text-text-dark group-hover:bg-primary group-hover:text-white transition-colors duration-500">
+                        {link.platform === 'WHATSAPP' ? <MessageCircle size={20} /> :
+                          link.platform === 'FACEBOOK' ? <Facebook size={20} /> : <Share2 size={20} />}
+                      </div>
+                      <div>
+                        <p className="text-xs font-black text-text-muted uppercase tracking-widest">
+                          {getPlatformLabel(link.platform)}
+                        </p>
+                        <p className="text-sm font-black text-text-dark group-hover:text-primary transition-colors">
+                          {link.display_name || 'Mi Perfil'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-xs font-bold text-text-muted truncate max-w-[150px]">
+                      {link.url}
+                    </p>
+
+                    <div className="flex items-center gap-3">
+                      {link.is_public && (
+                        <span className="text-[10px] font-black text-primary px-3 py-1 rounded-full bg-primary/5 border border-primary/10 uppercase tracking-widest">
+                          VISIBLE EN TIENDA
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600 truncate">{link.url}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleEdit(link)}
-                    className="rounded-md p-2 text-gray-400 hover:text-gray-600"
-                    title="Editar"
-                  >
-                    <Edit className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(link.id)}
-                    className="rounded-md p-2 text-gray-400 hover:text-red-600"
-                    title="Eliminar"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
+
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => handleEdit(link)}
+                      className="size-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-text-muted hover:text-primary hover:border-primary transition-all shadow-sm"
+                      title="Editar"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(link.id)}
+                      className="size-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-text-muted hover:text-red-500 hover:border-red-500 transition-all shadow-sm"
+                      title="Eliminar"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -290,8 +296,3 @@ export function SocialLinksSection({ socialLinks: initialLinks }: SocialLinksSec
     </div>
   )
 }
-
-
-
-
-

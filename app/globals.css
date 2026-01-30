@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f9fafb;
   --foreground: #1A1A1A;
   --primary: #4CAF50;
   --gold: #D4AF37;
@@ -10,6 +10,8 @@
   --background-light: #FFFFFF;
   --text-dark: #1A1A1A;
   --text-muted: #666666;
+  --radius-xl: 2.5rem;
+  --radius-2xl: 3rem;
 }
 
 @theme inline {
@@ -20,14 +22,22 @@
   --color-royal-blue: #2196F3;
   --color-text-dark: #1A1A1A;
   --color-text-muted: #666666;
+  
   --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono);
+  --font-display: 'Public Sans', sans-serif;
+  
+  --radius-DEFAULT: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2.5rem;
+  --radius-2xl: 3rem;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Public Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Smooth scrolling */
@@ -44,6 +54,7 @@ html {
 .glass-nav {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Gold glow suave */
@@ -52,7 +63,7 @@ html {
 }
 
 .gold-glow {
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
 }
 
 /* Divisor */
@@ -61,16 +72,22 @@ html {
   background: linear-gradient(to right, transparent, #e5e7eb, transparent);
 }
 
-/* Inputs - tema claro */
-input,
-textarea,
-select {
-  background-color: #ffffff;
-  color: #1A1A1A;
-  border-color: #e5e7eb;
+/* Base Styles */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 900;
+  letter-spacing: -0.025em;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: #9ca3af;
+/* Custom Utilities */
+.premium-card {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.premium-card:hover {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
 }

@@ -87,55 +87,71 @@ export function InventoryManager({
 
   if (products.length === 0) {
     return (
-      <div className="bg-white shadow rounded-lg p-12 text-center">
-        <p className="text-gray-500">No hay productos disponibles</p>
+      <div className="bg-white border border-gray-100 shadow-sm rounded-[2.5rem] p-20 text-center">
+        <div className="mx-auto h-20 w-20 bg-gray-50 rounded-3xl flex items-center justify-center mb-6">
+          <Loader2 className="h-10 w-10 text-gray-200" />
+        </div>
+        <p className="text-xl font-black text-text-dark tracking-tight">No hay productos disponibles</p>
+        <p className="text-text-muted mt-2">Agrega productos para gestionar su stock</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white shadow rounded-lg overflow-hidden">
+    <div className="bg-white border border-gray-100 shadow-sm rounded-[2.5rem] overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-50">
+          <thead className="bg-gray-50/50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-8 py-5 text-left text-xs font-black uppercase tracking-[0.2em] text-text-muted">
                 Producto
               </th>
               {warehouses.map((warehouse) => (
                 <th
                   key={warehouse.id}
-                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                  className="px-8 py-5 text-left text-xs font-black uppercase tracking-[0.2em] text-text-muted"
                 >
-                  {warehouse.name}
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-gold"></span>
+                    {warehouse.name}
+                  </div>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-50">
             {products.map((product) => (
-              <tr key={product.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {product.name}
+              <tr key={product.id} className="hover:bg-gray-50/50 transition-colors group">
+                <td className="px-8 py-6 whitespace-nowrap">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black">
+                      {product.name[0]}
                     </div>
-                    <div className="text-sm text-gray-500">SKU: {product.sku}</div>
+                    <div>
+                      <div className="text-sm font-black text-text-dark group-hover:text-primary transition-colors tracking-tight">
+                        {product.name}
+                      </div>
+                      <div className="text-[10px] font-bold text-text-muted font-mono tracking-widest uppercase">
+                        {product.sku}
+                      </div>
+                    </div>
                   </div>
                 </td>
                 {warehouses.map((warehouse) => {
                   const currentStock = getCurrentStock(product.id, warehouse.id)
-                  const inputValue =
-                    quantities[product.id]?.[warehouse.id] || ''
+                  const inputValue = quantities[product.id]?.[warehouse.id] || ''
                   const isLoading = loading === `${product.id}-${warehouse.id}`
 
                   return (
-                    <td key={warehouse.id} className="px-6 py-4 whitespace-nowrap">
-                      <div className="space-y-2">
-                        <div className="text-sm text-gray-900">
-                          Stock actual: <strong>{currentStock}</strong>
-                        </div>
+                    <td key={warehouse.id} className="px-8 py-6 whitespace-nowrap">
+                      <div className="space-y-4">
                         <div className="flex items-center gap-2">
+                          <span className={`text-xl font-black tracking-tighter ${currentStock > 0 ? 'text-text-dark' : 'text-gray-300'}`}>
+                            {currentStock}
+                          </span>
+                          <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">unidades</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-1.5 bg-gray-50 rounded-full border border-gray-100 group-hover:bg-white group-hover:border-primary/20 transition-all">
                           <input
                             type="number"
                             min="1"
@@ -147,22 +163,21 @@ export function InventoryManager({
                                 e.target.value
                               )
                             }
-                            placeholder="Cantidad"
-                            className="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                            placeholder="0"
+                            className="w-20 bg-transparent px-4 py-2 text-sm font-black text-text-dark outline-none placeholder:text-gray-300"
                           />
                           <button
                             onClick={() =>
                               handleAddStock(product.id, warehouse.id)
                             }
                             disabled={isLoading || !inputValue || (inputValue ? parseInt(String(inputValue)) <= 0 : true)}
-                            className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center justify-center size-8 bg-primary text-white rounded-full hover:bg-[#3d8b40] shadow-md shadow-primary/20 disabled:opacity-30 disabled:grayscale transition-all hover:scale-110 active:scale-95"
                           >
                             {isLoading ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
-                              <Plus className="h-4 w-4" />
+                              <Plus className="h-5 w-5" />
                             )}
-                            Agregar
                           </button>
                         </div>
                       </div>

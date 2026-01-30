@@ -31,7 +31,7 @@ export default async function AdminLayout({
     .single()
 
   return (
-    <div className="min-h-screen bg-[#121212]">
+    <div className="min-h-screen bg-[#f8fafc]">
       <AdminSidebar />
       <div className="lg:pl-64">
         <AdminHeader user={user} profile={profile} />
