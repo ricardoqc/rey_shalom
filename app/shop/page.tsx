@@ -10,7 +10,7 @@ export default async function ShopPage({
 }) {
   // En Next.js 16, searchParams es una Promise y debe ser await
   const params = await searchParams
-  
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -35,7 +35,7 @@ export default async function ShopPage({
     .order('min_points', { ascending: true })
 
   // Obtener productos y categorías
-  const products = await getProducts(params.category)
+  const products = await getProducts({ category: params.category })
   const categories = await getCategories()
 
   // Obtener inventario para cada producto
@@ -64,27 +64,25 @@ export default async function ShopPage({
           <div className="mb-6 flex flex-wrap gap-2">
             <a
               href="/shop"
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                !params.category
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${!params.category
                   ? 'bg-[#4CAF50] text-white'
                   : 'bg-white text-[#1A1A1A] hover:bg-gray-50 border border-gray-200'
-              }`}
+                }`}
             >
               <Filter className="h-4 w-4" />
               Todos
             </a>
             {categories.map((category) => (
-            <a
-              key={category}
-              href={`/shop?category=${encodeURIComponent(category)}`}
-              className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                params.category === category
-                  ? 'bg-[#4CAF50] text-white'
-                  : 'bg-white text-[#1A1A1A] hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              {category}
-            </a>
+              <a
+                key={category}
+                href={`/shop?category=${encodeURIComponent(category)}`}
+                className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-colors ${params.category === category
+                    ? 'bg-[#4CAF50] text-white'
+                    : 'bg-white text-[#1A1A1A] hover:bg-gray-50 border border-gray-200'
+                  }`}
+              >
+                {category}
+              </a>
             ))}
           </div>
         )}
